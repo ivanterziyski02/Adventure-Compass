@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "458844023064",
+    "firebase_url": "https://adventurecompass-ca5d2-default-rtdb.firebaseio.com",
+    "project_id": "adventurecompass-ca5d2",
+    "storage_bucket": "adventurecompass-ca5d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:458844023064:android:ddb5de6ebec77b6c6a566d",
+        "android_client_info": {
+          "package_name": "com.example.adventurecompass"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0h1dWI_0JryFGaZF38Yuq1fZUBHmxZCA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
