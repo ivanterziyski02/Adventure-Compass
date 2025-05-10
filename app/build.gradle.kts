@@ -51,6 +51,9 @@ dependencies {
     implementation ("com.google.firebase:firebase-bom:32.8.1") // Проверете за актуалните версии
     // Firebase Authentication
     implementation ("com.google.firebase:firebase-auth")
+    // Google play location
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
 }
 apply (plugin = "com.google.gms.google-services")
 apply(plugin = "com.android.application")
