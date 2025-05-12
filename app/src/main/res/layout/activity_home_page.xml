@@ -26,19 +26,34 @@
                 android:text="Locations"/>
         </androidx.appcompat.widget.Toolbar>
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="8"
-        android:padding="10dp"
-        android:background="@drawable/recyclerview_bg">
+        android:background="@drawable/recyclerview_bg"
+        android:padding="10dp">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="3dp"
-            android:layout_marginTop="3dp"
-            />
+            android:layout_marginTop="3dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="8dp">
+
+        <Button
+            android:id="@+id/myProfileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="75dp"
+            android:text="Моят профил" />
     </LinearLayout>
 
 </LinearLayout>

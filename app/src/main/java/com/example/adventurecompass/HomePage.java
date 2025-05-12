@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -72,6 +73,12 @@ public class HomePage extends AppCompatActivity implements LocationAdapter.Selec
 
         locationAdapter = new LocationAdapter(locationModelList, (LocationAdapter.SelectedLocation) this);
         recyclerView.setAdapter(locationAdapter);
+
+        Button myProfileButton = findViewById(R.id.myProfileButton);
+        myProfileButton.setOnClickListener(v -> {
+            Intent intent = new Intent(HomePage.this, MyProfileActivity.class);
+            startActivity(intent);
+        });
     }
     @Override
     public void selectedLocation(LocationModel locationModel) {
