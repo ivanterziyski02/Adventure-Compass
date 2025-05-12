@@ -18,6 +18,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.*;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     EditText editTextEmail, editTextPassword;
@@ -35,56 +40,85 @@ public class MainActivity extends AppCompatActivity {
         signIn = findViewById(R.id.sign_in);
         signUp = findViewById(R.id.sign_up);
 
-        signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        signUp.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+            startActivity(intent);
+            finish();
         });
 
-        signIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email, password;
-                email = String.valueOf(editTextEmail.getText());
-                password = String.valueOf(editTextPassword.getText());
+        signIn.setOnClickListener(v -> {
+            String email = String.valueOf(editTextEmail.getText());
+            String password = String.valueOf(editTextPassword.getText());
 
-                if(TextUtils.isEmpty(email)){
-                    Toast.makeText(MainActivity.this, "Enter email", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                if(TextUtils.isEmpty(password)){
-                    Toast.makeText(MainActivity.this, "Enter password", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                firebaseAuth.signInWithEmailAndPassword(email,password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if(task.isSuccessful()){
-                                    Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
-                                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                                    if (currentUser != null) {
-                                        String userId = currentUser.getUid(); // Това е уникалният UID за потребителя
-                                        Log.d("MainActivity", "ID of logged user: " + userId);
-                                    }
-                                    Intent intent = new Intent(MainActivity.this,HomePage.class);
-                                    startActivity(intent);
-                                    finish();
-
-                                }else{
-                                    Toast.makeText(MainActivity.this, "Invalid email or password", Toast.LENGTH_LONG).show();
-                                    clearAll();
-                                }
-
-                            }
-                        });
+            if (TextUtils.isEmpty(email)) {
+                Toast.makeText(MainActivity.this, "Enter email", Toast.LENGTH_LONG).show();
+                return;
             }
+            if (TextUtils.isEmpty(password)) {
+                Toast.makeText(MainActivity.this, "Enter password", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            firebaseAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
+                            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                            if (currentUser != null) {
+                                String uid = currentUser.getUid();
+                                String userEmail = currentUser.getEmail();
+
+                                DatabaseReference userRef = FirebaseDatabase.getInstance()
+                                        .getReference("users").child(uid);
+
+                                userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (!snapshot.exists()) {
+                                            FirebaseMessaging.getInstance().getToken().addOnCompleteListener(tokenTask -> {
+                                                if (tokenTask.isSuccessful()) {
+                                                    String token = tokenTask.getResult();
+                                                    Map<String, Object> userMap = new HashMap<>();
+                                                    userMap.put("name", "");
+                                                    userMap.put("bio", "");
+                                                    userMap.put("profilePictureUrl", "");
+                                                    userMap.put("email", userEmail);
+                                                    userMap.put("registrationDate", ServerValue.TIMESTAMP);
+                                                    userMap.put("fcmToken", token);
+                                                    userMap.put("friends", new HashMap<>());
+
+                                                    Map<String, Object> friendRequests = new HashMap<>();
+                                                    friendRequests.put("from", new HashMap<>());
+                                                    friendRequests.put("to", new HashMap<>());
+                                                    userMap.put("friendRequests", friendRequests);
+
+                                                    userRef.setValue(userMap);
+                                                }
+                                            });
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.e("Firebase", "Database error: " + error.getMessage());
+                                    }
+                                });
+
+                                Log.d("MainActivity", "ID of logged user: " + uid);
+                            }
+
+                            Intent intent = new Intent(MainActivity.this, HomePage.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(MainActivity.this, "Invalid email or password", Toast.LENGTH_LONG).show();
+                            clearAll();
+                        }
+                    });
         });
     }
-    private void clearAll(){
+
+    private void clearAll() {
         editTextEmail.setText("");
         editTextPassword.setText("");
     }
