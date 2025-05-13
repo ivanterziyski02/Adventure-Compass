@@ -48,11 +48,12 @@ dependencies {
 
     // Firebase BOM (Bill of Materials)
     //noinspection BomWithoutPlatform
-    implementation ("com.google.firebase:firebase-bom:32.8.1") // Проверете за актуалните версии
+    implementation ("com.google.firebase:firebase-bom:32.8.1")
     // Firebase Authentication
     implementation ("com.google.firebase:firebase-auth")
     // Google play location
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.firebase:firebase-storage")
 
 }
 apply (plugin = "com.google.gms.google-services")
