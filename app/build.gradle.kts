@@ -35,6 +35,7 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.firebase:firebase-database:20.3.1")
+    implementation("androidx.activity:activity:1.9.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -50,10 +51,10 @@ dependencies {
     //noinspection BomWithoutPlatform
     implementation ("com.google.firebase:firebase-bom:32.8.1")
     // Firebase Authentication
-    implementation ("com.google.firebase:firebase-auth")
+    implementation ("com.google.firebase:firebase-auth:22.3.0")
     // Google play location
     implementation("com.google.android.gms:play-services-location:21.0.1")
-    implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-storage:20.3.0")
 
 }
 apply (plugin = "com.google.gms.google-services")
