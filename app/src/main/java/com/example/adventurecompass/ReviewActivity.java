@@ -38,6 +38,8 @@ public class ReviewActivity extends AppCompatActivity {
 
         reviewAdapter = new ReviewAdapter(options,locationId);
         recyclerView.setAdapter(reviewAdapter);
+        recyclerView.setItemAnimator(null);
+
 
         floatingActionButton = findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
