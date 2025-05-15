@@ -42,9 +42,11 @@ public class UserProfileActivity extends AppCompatActivity {
         Button buttonRequestSent = findViewById(R.id.buttonRequestSent);
         LinearLayout buttonRequestActions = findViewById(R.id.buttonRequestActions);
         LinearLayout friendActions = findViewById(R.id.friendActions);
+        LinearLayout blockActionsLayout = findViewById(R.id.blockActionsLayout);
         Button buttonAccept = findViewById(R.id.buttonAccept);
         Button buttonDecline = findViewById(R.id.buttonDecline);
         Button buttonBlock = findViewById(R.id.buttonBlock);
+        Button buttonUnblock = findViewById(R.id.buttonUnblock);
 
 
 
@@ -53,6 +55,8 @@ public class UserProfileActivity extends AppCompatActivity {
         buttonRequestSent.setVisibility(View.GONE);
         buttonRequestActions.setVisibility(View.GONE);
         friendActions.setVisibility(View.GONE);
+        blockActionsLayout.setVisibility(View.GONE);
+        buttonBlock.setVisibility(View.GONE);
 
 
 
@@ -75,7 +79,18 @@ public class UserProfileActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
                             Toast.makeText(UserProfileActivity.this, "Този потребител е блокиран", Toast.LENGTH_SHORT).show();
-                            finish(); // Затваря екрана
+                            blockActionsLayout.setVisibility(View.VISIBLE);
+                            buttonUnblock.setOnClickListener(v -> {
+                                currentUserRef.child("blocked").child(userId).removeValue()
+                                        .addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(UserProfileActivity.this, "Потребителят е разблокиран", Toast.LENGTH_SHORT).show();
+                                                recreate(); // Презарежда activity, за да зареди правилните бутони
+                                            } else {
+                                                Toast.makeText(UserProfileActivity.this, "Грешка при разблокиране", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            });
                         }
                     }
 
