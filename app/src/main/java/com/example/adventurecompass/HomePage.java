@@ -79,6 +79,13 @@ public class HomePage extends AppCompatActivity implements LocationAdapter.Selec
             Intent intent = new Intent(HomePage.this, MyProfileActivity.class);
             startActivity(intent);
         });
+
+        Button allUsersButton = findViewById(R.id.allUsersButton);
+        allUsersButton.setOnClickListener(v -> {
+            Intent intent = new Intent(HomePage.this, AllUsersActivity.class); // Ще създадем това Activity
+            startActivity(intent);
+        });
+
     }
     @Override
     public void selectedLocation(LocationModel locationModel) {
