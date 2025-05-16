@@ -34,7 +34,6 @@ public class UserProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_profile);
 
         friendshipManager = new FriendshipManager(this);
-
         emailText = findViewById(R.id.emailText);
         nameText = findViewById(R.id.nameText);
         bioText = findViewById(R.id.bioText);
@@ -50,7 +49,6 @@ public class UserProfileActivity extends AppCompatActivity {
         Button buttonDecline = findViewById(R.id.buttonDecline);
         Button buttonBlock = findViewById(R.id.buttonBlock);
         Button buttonUnblock = findViewById(R.id.buttonUnblock);
-
 
         buttonSendRequest.setVisibility(View.GONE);
         buttonRequestSent.setVisibility(View.GONE);
@@ -151,6 +149,14 @@ public class UserProfileActivity extends AppCompatActivity {
                                         buttonRequestSent.setVisibility(View.VISIBLE);
                                     })
                             );
+                            break;
+                        case BLOCKED_BY_OTHER:
+                            Toast.makeText(UserProfileActivity.this, "Този потребител не може да бъде достъпен", Toast.LENGTH_SHORT).show();
+                            friendActions.setVisibility(View.GONE); // layout с бутони "изпрати съобщение" и "блокирай"
+                            buttonSendRequest.setVisibility(View.GONE);
+                            buttonRequestSent.setVisibility(View.GONE);
+                            buttonRequestActions.setVisibility(View.GONE);
+                            blockActionsLayout.setVisibility(View.GONE);
                             break;
                     }
                 });

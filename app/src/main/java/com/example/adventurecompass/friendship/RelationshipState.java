@@ -5,5 +5,6 @@ public enum RelationshipState {
     FRIENDS,
     REQUEST_SENT,
     REQUEST_RECEIVED,
-    NO_RELATION
+    NO_RELATION,
+    BLOCKED_BY_OTHER
 }
