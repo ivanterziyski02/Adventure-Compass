@@ -1,5 +1,7 @@
 package com.example.adventurecompass;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -7,10 +9,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
+import com.example.adventurecompass.friendship.FriendshipManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,7 +18,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -27,17 +26,21 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private ImageView profileImageView;
     private TextView emailText, nameText, bioText, registrationDateText;
+    private FriendshipManager friendshipManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_profile); // Използваме същия layout
+        setContentView(R.layout.activity_my_profile);
+
+        friendshipManager = new FriendshipManager(this);
 
         emailText = findViewById(R.id.emailText);
         nameText = findViewById(R.id.nameText);
         bioText = findViewById(R.id.bioText);
         registrationDateText = findViewById(R.id.registrationDateText);
         profileImageView = findViewById(R.id.profileImageView);
+
         Button buttonSendRequest = findViewById(R.id.buttonSendRequest);
         Button buttonRequestSent = findViewById(R.id.buttonRequestSent);
         LinearLayout buttonRequestActions = findViewById(R.id.buttonRequestActions);
@@ -49,21 +52,14 @@ public class UserProfileActivity extends AppCompatActivity {
         Button buttonUnblock = findViewById(R.id.buttonUnblock);
 
 
-
-        // Скриваме всички бутони по подразбиране
         buttonSendRequest.setVisibility(View.GONE);
         buttonRequestSent.setVisibility(View.GONE);
         buttonRequestActions.setVisibility(View.GONE);
         friendActions.setVisibility(View.GONE);
         blockActionsLayout.setVisibility(View.GONE);
         buttonBlock.setVisibility(View.GONE);
+        findViewById(R.id.editProfileButton).setVisibility(View.GONE);
 
-
-
-        // Скриваме бутона за редакция
-        findViewById(R.id.editProfileButton).setVisibility(android.view.View.GONE);
-
-        // Получаваме uid на избрания потребител
         String userId = getIntent().getStringExtra("userId");
         if (userId == null) {
             Toast.makeText(this, "Невалиден потребител", Toast.LENGTH_SHORT).show();
@@ -71,38 +67,18 @@ public class UserProfileActivity extends AppCompatActivity {
             return;
         }
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        if (userId.equals(currentUserId)) {
+            startActivity(new Intent(this, MyProfileActivity.class));
+            finish();
+            return;
+        }
 
-        DatabaseReference currentUserRef = FirebaseDatabase.getInstance().getReference("users").child(currentUserId);
-        currentUserRef.child("blocked").child(userId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            Toast.makeText(UserProfileActivity.this, "Този потребител е блокиран", Toast.LENGTH_SHORT).show();
-                            blockActionsLayout.setVisibility(View.VISIBLE);
-                            buttonUnblock.setOnClickListener(v -> {
-                                currentUserRef.child("blocked").child(userId).removeValue()
-                                        .addOnCompleteListener(task -> {
-                                            if (task.isSuccessful()) {
-                                                Toast.makeText(UserProfileActivity.this, "Потребителят е разблокиран", Toast.LENGTH_SHORT).show();
-                                                recreate(); // Презарежда activity, за да зареди правилните бутони
-                                            } else {
-                                                Toast.makeText(UserProfileActivity.this, "Грешка при разблокиране", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {}
-                });
-
-        // Зареждаме потребителя от Firebase
+        // Get user info
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @SuppressLint("SetTextI18n")
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(DataSnapshot snapshot) {
                 String email = snapshot.child("email").getValue(String.class);
                 String name = snapshot.child("name").getValue(String.class);
                 String bio = snapshot.child("bio").getValue(String.class);
@@ -126,133 +102,62 @@ public class UserProfileActivity extends AppCompatActivity {
                 } else {
                     profileImageView.setImageResource(R.drawable.ic_person);
                 }
-                // Проверка за връзка между потребителите
-                DatabaseReference currentUserRef = FirebaseDatabase.getInstance().getReference("users").child(currentUserId);
 
-                currentUserRef.child("friends").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            // Приятели са
+                // Get state between users
+                friendshipManager.getRelationshipState(currentUserId, userId, state -> {
+                    switch (state) {
+                        case BLOCKED:
+                            Toast.makeText(UserProfileActivity.this, "Този потребител е блокиран", Toast.LENGTH_SHORT).show();
+                            blockActionsLayout.setVisibility(View.VISIBLE);
+                            buttonUnblock.setOnClickListener(v ->
+                                    friendshipManager.unblockUser(currentUserId, userId, UserProfileActivity.this::recreate)
+                            );
+                            break;
+
+                        case FRIENDS:
                             friendActions.setVisibility(View.VISIBLE);
-                            buttonBlock.setOnClickListener(view -> {
-                                DatabaseReference currentUserRef = FirebaseDatabase.getInstance()
-                                        .getReference("users").child(currentUserId);
+                            buttonBlock.setVisibility(View.VISIBLE);
+                            buttonBlock.setOnClickListener(v ->
+                                    friendshipManager.blockUser(currentUserId, userId, UserProfileActivity.this::finish)
+                            );
+                            break;
 
-                                // 1. Записваме UID на блокирания потребител
-                                currentUserRef.child("blocked").child(userId)
-                                        .setValue(true)
-                                        .addOnCompleteListener(task -> {
-                                            if (task.isSuccessful()) {
-                                                // 2. Махаме потребителя от приятели
-                                                currentUserRef.child("friends").child(userId).removeValue();
-                                                FirebaseDatabase.getInstance().getReference("users")
-                                                        .child(userId).child("friends").child(currentUserId).removeValue();
+                        case REQUEST_SENT:
+                            buttonRequestSent.setVisibility(View.VISIBLE);
+                            break;
 
-                                                // 3. UI обновяване
-                                                friendActions.setVisibility(View.GONE);
-                                                Toast.makeText(UserProfileActivity.this, "Потребителят е блокиран", Toast.LENGTH_SHORT).show();
-                                                finish(); // или навигиране назад
-                                            } else {
-                                                Toast.makeText(UserProfileActivity.this, "Грешка при блокиране", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                            });
-                        } else {
-                            // Проверка дали текущият е изпратил покана
-                            currentUserRef.child("friendRequests").child("to").child(userId)
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshotTo) {
-                                            if (snapshotTo.exists()) {
-                                                buttonRequestSent.setVisibility(View.VISIBLE);
+                        case REQUEST_RECEIVED:
+                            buttonRequestActions.setVisibility(View.VISIBLE);
+                            buttonAccept.setOnClickListener(v ->
+                                    friendshipManager.acceptFriendRequest(currentUserId, userId, () -> {
+                                        buttonRequestActions.setVisibility(View.GONE);
+                                        friendActions.setVisibility(View.VISIBLE);
+                                        buttonBlock.setVisibility(View.VISIBLE);
+                                    })
+                            );
+                            buttonDecline.setOnClickListener(v ->
+                                    friendshipManager.declineFriendRequest(currentUserId, userId, () -> {
+                                        buttonRequestActions.setVisibility(View.GONE);
+                                        buttonSendRequest.setVisibility(View.VISIBLE);
+                                    })
+                            );
+                            break;
 
-
-                                            } else {
-                                                // Проверка дали текущият е получил покана
-                                                currentUserRef.child("friendRequests").child("from").child(userId)
-                                                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                            @Override
-                                                            public void onDataChange(@NonNull DataSnapshot snapshotFrom) {
-                                                                if (snapshotFrom.exists()) {
-                                                                    buttonRequestActions.setVisibility(View.VISIBLE);
-                                                                    buttonAccept.setOnClickListener(view -> {
-                                                                        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
-                                                                        usersRef.child(currentUserId).child("friendRequests").child("from").child(userId).removeValue();
-                                                                        usersRef.child(userId).child("friendRequests").child("to").child(currentUserId).removeValue();
-
-                                                                        usersRef.child(currentUserId).child("friends").child(userId).setValue(true);
-                                                                        usersRef.child(userId).child("friends").child(currentUserId).setValue(true);
-
-                                                                        Toast.makeText(UserProfileActivity.this, "Добавихте се като приятели", Toast.LENGTH_SHORT).show();
-                                                                        buttonRequestActions.setVisibility(View.GONE);
-                                                                        friendActions.setVisibility(View.VISIBLE);
-                                                                    });
-
-                                                                    buttonDecline.setOnClickListener(view -> {
-                                                                        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
-                                                                        usersRef.child(currentUserId).child("friendRequests").child("from").child(userId).removeValue();
-                                                                        usersRef.child(userId).child("friendRequests").child("to").child(currentUserId).removeValue();
-
-                                                                        Toast.makeText(UserProfileActivity.this, "Поканата е отказана", Toast.LENGTH_SHORT).show();
-                                                                        buttonRequestActions.setVisibility(View.GONE);
-                                                                        buttonSendRequest.setVisibility(View.VISIBLE);
-                                                                    });
-
-                                                                } else {
-                                                                    buttonSendRequest.setVisibility(View.VISIBLE);
-                                                                    buttonSendRequest.setOnClickListener(view -> {
-                                                                        buttonSendRequest.setEnabled(false);
-                                                                        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-
-                                                                        usersRef.child(currentUserId).child("friendRequests").child("to").child(userId)
-                                                                                .setValue(true)
-                                                                                .addOnCompleteListener(task1 -> {
-                                                                                    if (task1.isSuccessful()) {
-                                                                                        usersRef.child(userId).child("friendRequests").child("from").child(currentUserId)
-                                                                                                .setValue(true)
-                                                                                                .addOnCompleteListener(task2 -> {
-                                                                                                    if (task2.isSuccessful()) {
-                                                                                                        Toast.makeText(UserProfileActivity.this, "Поканата е изпратена", Toast.LENGTH_SHORT).show();
-                                                                                                        buttonSendRequest.setVisibility(View.GONE);
-                                                                                                        buttonRequestSent.setVisibility(View.VISIBLE);
-                                                                                                    } else {
-                                                                                                        Toast.makeText(UserProfileActivity.this, "Грешка при записване в получателя", Toast.LENGTH_SHORT).show();
-                                                                                                    }
-                                                                                                });
-                                                                                    } else {
-                                                                                        Toast.makeText(UserProfileActivity.this, "Грешка при записване в изпращача", Toast.LENGTH_SHORT).show();
-                                                                                    }
-                                                                                });
-                                                                    });
-                                                                }
-                                                            }
-
-                                                            @Override
-                                                            public void onCancelled(@NonNull DatabaseError error) {}
-                                                        });
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {}
-                                    });
-                        }
+                        case NO_RELATION:
+                            buttonSendRequest.setVisibility(View.VISIBLE);
+                            buttonSendRequest.setOnClickListener(v ->
+                                    friendshipManager.sendFriendRequest(currentUserId, userId, () -> {
+                                        buttonSendRequest.setVisibility(View.GONE);
+                                        buttonRequestSent.setVisibility(View.VISIBLE);
+                                    })
+                            );
+                            break;
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {}
                 });
-
-
-
-
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+            public void onCancelled(DatabaseError error) {
                 Toast.makeText(UserProfileActivity.this, "Грешка при зареждане", Toast.LENGTH_SHORT).show();
             }
         });
