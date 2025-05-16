@@ -3,13 +3,10 @@ package com.example.adventurecompass;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.FirebaseDatabase;
@@ -28,7 +25,6 @@ public class ReviewActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         String locationId = getIntent().getStringExtra("LOCATION_ID");
-        Log.d("ReviewActivity", "Received in review location ID: " + locationId);
 
         assert locationId != null;
         FirebaseRecyclerOptions<ReviewModel> options =
@@ -39,9 +35,8 @@ public class ReviewActivity extends AppCompatActivity {
         reviewAdapter = new ReviewAdapter(options,locationId);
         recyclerView.setAdapter(reviewAdapter);
         recyclerView.setItemAnimator(null);
-
-
         floatingActionButton = findViewById(R.id.floatingActionButton);
+
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

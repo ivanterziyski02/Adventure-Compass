@@ -39,7 +39,6 @@ public class GoogleMapsActivity extends AppCompatActivity {
         EditText editTextDestination = findViewById(R.id.destination);
         Button button = findViewById(R.id.btnSubmit);
 
-        // Извличане на данни от Intent
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("LOCATION_NAME")) {
             String locationName = intent.getStringExtra("LOCATION_NAME");
@@ -48,7 +47,6 @@ public class GoogleMapsActivity extends AppCompatActivity {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Проверка за разрешение
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -76,6 +74,7 @@ public class GoogleMapsActivity extends AppCompatActivity {
             }
         });
     }
+    
     private void getUserLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
