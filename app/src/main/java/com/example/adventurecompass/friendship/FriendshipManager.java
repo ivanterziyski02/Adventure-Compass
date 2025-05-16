@@ -17,38 +17,52 @@ public class FriendshipManager {
         this.usersRef = FirebaseDatabase.getInstance().getReference("users");
     }
     public void getRelationshipState(String currentUid, String targetUid, RelationshipCallback callback) {
-        usersRef.child(currentUid).child("blocked").child(targetUid)
+        usersRef.child(targetUid).child("blocked").child(currentUid)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override public void onDataChange(@NonNull DataSnapshot blockedSnapshot) {
-                        if (blockedSnapshot.exists()) {
-                            callback.onResult(RelationshipState.BLOCKED);
+                    @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            callback.onResult(RelationshipState.BLOCKED_BY_OTHER);
                             return;
                         }
 
-                        usersRef.child(currentUid).child("friends").child(targetUid)
+                        usersRef.child(currentUid).child("blocked").child(targetUid)
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override public void onDataChange(@NonNull DataSnapshot friendSnapshot) {
-                                        if (friendSnapshot.exists()) {
-                                            callback.onResult(RelationshipState.FRIENDS);
+                                    @Override public void onDataChange(@NonNull DataSnapshot blockedSnapshot) {
+                                        if (blockedSnapshot.exists()) {
+                                            callback.onResult(RelationshipState.BLOCKED);
                                             return;
                                         }
 
-                                        usersRef.child(currentUid).child("friendRequests").child("to").child(targetUid)
+                                        usersRef.child(currentUid).child("friends").child(targetUid)
                                                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override public void onDataChange(@NonNull DataSnapshot toSnapshot) {
-                                                        if (toSnapshot.exists()) {
-                                                            callback.onResult(RelationshipState.REQUEST_SENT);
+                                                    @Override public void onDataChange(@NonNull DataSnapshot friendSnapshot) {
+                                                        if (friendSnapshot.exists()) {
+                                                            callback.onResult(RelationshipState.FRIENDS);
                                                             return;
                                                         }
 
-                                                        usersRef.child(currentUid).child("friendRequests").child("from").child(targetUid)
+                                                        usersRef.child(currentUid).child("friendRequests").child("to").child(targetUid)
                                                                 .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                    @Override public void onDataChange(@NonNull DataSnapshot fromSnapshot) {
-                                                                        if (fromSnapshot.exists()) {
-                                                                            callback.onResult(RelationshipState.REQUEST_RECEIVED);
-                                                                        } else {
-                                                                            callback.onResult(RelationshipState.NO_RELATION);
+                                                                    @Override public void onDataChange(@NonNull DataSnapshot toSnapshot) {
+                                                                        if (toSnapshot.exists()) {
+                                                                            callback.onResult(RelationshipState.REQUEST_SENT);
+                                                                            return;
                                                                         }
+
+                                                                        usersRef.child(currentUid).child("friendRequests").child("from").child(targetUid)
+                                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                    @Override public void onDataChange(@NonNull DataSnapshot fromSnapshot) {
+                                                                                        if (fromSnapshot.exists()) {
+                                                                                            callback.onResult(RelationshipState.REQUEST_RECEIVED);
+                                                                                        } else {
+                                                                                            callback.onResult(RelationshipState.NO_RELATION);
+                                                                                        }
+                                                                                    }
+
+                                                                                    @Override public void onCancelled(@NonNull DatabaseError error) {
+                                                                                        showToast("Грешка при проверка на заявките");
+                                                                                    }
+                                                                                });
                                                                     }
 
                                                                     @Override public void onCancelled(@NonNull DatabaseError error) {
@@ -58,23 +72,22 @@ public class FriendshipManager {
                                                     }
 
                                                     @Override public void onCancelled(@NonNull DatabaseError error) {
-                                                        showToast("Грешка при проверка на заявките");
+                                                        showToast("Грешка при проверка на приятелството");
                                                     }
                                                 });
                                     }
 
                                     @Override public void onCancelled(@NonNull DatabaseError error) {
-                                        showToast("Грешка при проверка на приятелството");
+                                        showToast("Грешка при проверка за блокиране");
                                     }
                                 });
                     }
 
                     @Override public void onCancelled(@NonNull DatabaseError error) {
-                        showToast("Грешка при проверка за блокиране");
+                        showToast("Грешка при проверка дали сте блокиран");
                     }
                 });
     }
-
     public void sendFriendRequest(String currentUid, String targetUid, Runnable onSuccess) {
         usersRef.child(currentUid).child("friendRequests").child("to").child(targetUid).setValue(true)
                 .addOnSuccessListener(aVoid ->
