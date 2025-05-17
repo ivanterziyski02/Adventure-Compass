@@ -1,64 +1,92 @@
 package com.example.adventurecompass;
 
-import android.content.Intent;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
+import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 
-public class UserAdapter extends FirebaseRecyclerAdapter<UserModel, UserAdapter.UserViewHolder> {
+    private Context context;
+    private List<UserModel> userList;
 
-    public UserAdapter(@NonNull FirebaseRecyclerOptions<UserModel> options) {
-        super(options);
+    public UserAdapter(Context context, List<UserModel> userList) {
+        this.context = context;
+        this.userList = userList;
     }
 
-    @Override
-    protected void onBindViewHolder(@NonNull UserViewHolder holder, int position, @NonNull UserModel model) {
-        holder.userName.setText(model.getName());
-        holder.userEmail.setText(model.getEmail());
+    public interface OnUserClickListener {
+        void onUserClick(UserModel user);
+    }
 
-        Glide.with(holder.userImage.getContext())
-                .load(model.getProfilePictureUrl())
-                .placeholder(R.drawable.ic_person) // показва се докато зарежда
-                .error(R.drawable.ic_person)       // ако няма или невалиден URL
-                .into(holder.userImage);
+    private OnUserClickListener listener;
 
-        holder.itemView.setOnClickListener(v -> {
-            String userId = getRef(position).getKey(); // Взима ключа (UID) от Firebase
-            if (userId != null) {
-                Intent intent = new Intent(v.getContext(), UserProfileActivity.class);
-                intent.putExtra("userId", userId);
-                v.getContext().startActivity(intent);
-            }
-        });
+    public void setOnUserClickListener(OnUserClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.user_item, parent, false);
         return new UserViewHolder(view);
     }
 
-    public static class UserViewHolder extends RecyclerView.ViewHolder {
-        TextView userName, userEmail;
-        CircleImageView userImage;
+    @Override
+    public void onBindViewHolder(@NonNull UserAdapter.UserViewHolder holder, int position) {
+        UserModel user = userList.get(position);
+        holder.bind(user);
+    }
+
+    @Override
+    public int getItemCount() {
+        return userList.size();
+    }
+
+    class UserViewHolder extends RecyclerView.ViewHolder {
+        TextView name, email;
+        ImageView profileImage;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
-            userName = itemView.findViewById(R.id.userName);
-            userEmail = itemView.findViewById(R.id.userEmail);
-            userImage = itemView.findViewById(R.id.userImage);
+            name = itemView.findViewById(R.id.userName);
+            email = itemView.findViewById(R.id.userEmail);
+            profileImage = itemView.findViewById(R.id.userImage);
         }
+
+        void bind(UserModel user) {
+            name.setText(user.getName());
+            email.setText(user.getEmail());
+            Glide.with(context)
+                    .load(user.getProfilePictureUrl())
+                    .placeholder(R.drawable.ic_person)
+                    .error(R.drawable.ic_person)
+                    .into(profileImage);
+
+            itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onUserClick(user);
+                }
+            });
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void updateList(List<UserModel> newList) {
+        userList.clear();
+        userList.addAll(newList);
+        notifyDataSetChanged();
+    }
+
+    public void removeItem(int position) {
+        userList.remove(position);
+        notifyItemRemoved(position);
     }
 }

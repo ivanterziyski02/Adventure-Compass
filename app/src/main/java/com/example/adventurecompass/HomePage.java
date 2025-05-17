@@ -7,20 +7,17 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +35,11 @@ public class HomePage extends AppCompatActivity implements LocationAdapter.Selec
 
         recyclerView = findViewById(R.id.recyclerview);
         toolbar = findViewById(R.id.toolbar);
+        Button friendsButton = findViewById(R.id.friendsButton);
+        Button receivedRequestsButton = findViewById(R.id.receivedRequestsButton);
+        Button allUsersButton = findViewById(R.id.allUsersButton);
+        Button myProfileButton = findViewById(R.id.myProfileButton);
+
 
         this.setSupportActionBar(toolbar);
         this.getSupportActionBar().setTitle("");
@@ -74,17 +76,28 @@ public class HomePage extends AppCompatActivity implements LocationAdapter.Selec
         locationAdapter = new LocationAdapter(locationModelList, (LocationAdapter.SelectedLocation) this);
         recyclerView.setAdapter(locationAdapter);
 
-        Button myProfileButton = findViewById(R.id.myProfileButton);
+        //Button myProfileButton = findViewById(R.id.myProfileButton);
         myProfileButton.setOnClickListener(v -> {
             Intent intent = new Intent(HomePage.this, MyProfileActivity.class);
             startActivity(intent);
         });
 
-        Button allUsersButton = findViewById(R.id.allUsersButton);
+        //Button allUsersButton = findViewById(R.id.allUsersButton);
         allUsersButton.setOnClickListener(v -> {
             Intent intent = new Intent(HomePage.this, AllUsersActivity.class); // Ще създадем това Activity
             startActivity(intent);
         });
+
+        friendsButton.setOnClickListener(view -> {
+            Intent intent = new Intent(HomePage.this, FriendsListActivity.class);
+            startActivity(intent);
+        });
+
+        receivedRequestsButton.setOnClickListener(view -> {
+            Intent intent = new Intent(HomePage.this, ReceivedRequestsActivity.class);
+            startActivity(intent);
+        });
+
 
     }
     @Override

@@ -3,23 +3,17 @@ package com.example.adventurecompass;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +22,6 @@ public class EditActivity extends AppCompatActivity {
     private EditText userNameEditText, descriptionEditText;
     private ImageView imagePreview;
     private Button btnChooseImage, btnUpdate;
-
     private String reviewId, locationId, currentImageUrl;
     private Uri selectedImageUri = null;
     private ActivityResultLauncher<Intent> galleryLauncher;
@@ -37,16 +30,14 @@ public class EditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.update_popup); // Използваме вече създадения layout
+        setContentView(R.layout.update_popup);
 
-        // Връзки към елементи
         userNameEditText = findViewById(R.id.txtName);
         descriptionEditText = findViewById(R.id.txtDescription);
         imagePreview = findViewById(R.id.imagePreview);
         btnChooseImage = findViewById(R.id.btnChooseImage);
         btnUpdate = findViewById(R.id.btnUpdate);
 
-        // Получаване на данни от Intent
         Intent intent = getIntent();
         reviewId = intent.getStringExtra("reviewId");
         locationId = intent.getStringExtra("locationId");
@@ -54,12 +45,10 @@ public class EditActivity extends AppCompatActivity {
         String description = intent.getStringExtra("description");
         currentImageUrl = intent.getStringExtra("imageUrl");
 
-        // Попълване на текущи стойности
         userNameEditText.setText(userName);
         descriptionEditText.setText(description);
         Glide.with(this).load(currentImageUrl).into(imagePreview);
 
-        // Избор на нова снимка
         galleryLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
