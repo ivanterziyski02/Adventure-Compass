@@ -26,6 +26,9 @@
         android:theme="@style/Theme.AdventureCompass"
         tools:targetApi="31">
         <activity
+            android:name=".chats.ChatActivity"
+            android:exported="false" />
+        <activity
             android:name=".ReceivedRequestsActivity"
             android:exported="false" />
         <activity
