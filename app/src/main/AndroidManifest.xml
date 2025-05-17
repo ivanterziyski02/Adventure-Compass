@@ -2,6 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,6 +26,24 @@
         android:theme="@style/Theme.AdventureCompass"
         tools:targetApi="31">
         <activity
+            android:name=".ReceivedRequestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FriendsListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AllUsersActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MyProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditActivity"
+            android:exported="false" />
+        <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
@@ -23,9 +54,6 @@
             android:exported="false" />
         <activity
             android:name=".GoogleMapsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LocationActivity"
             android:exported="false" />
         <activity
             android:name=".AddActivity"

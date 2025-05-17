@@ -26,19 +26,66 @@
                 android:text="Locations"/>
         </androidx.appcompat.widget.Toolbar>
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="8"
-        android:padding="10dp"
-        android:background="@drawable/recyclerview_bg">
+        android:background="@drawable/recyclerview_bg"
+        android:padding="10dp">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="3dp"
-            android:layout_marginTop="3dp"
-            />
+            android:layout_marginTop="3dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/myProfileButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Моят профил" />
+
+        <Button
+            android:id="@+id/allUsersButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Всички потребители" />
+    </LinearLayout>
+
+    <!-- Втори ред -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:gravity="center"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/friendsButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Моите приятели" />
+
+        <Button
+            android:id="@+id/receivedRequestsButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Получени покани" />
     </LinearLayout>
 
 </LinearLayout>
