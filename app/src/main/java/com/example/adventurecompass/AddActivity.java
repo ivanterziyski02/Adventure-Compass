@@ -4,23 +4,18 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +25,6 @@ public class AddActivity extends AppCompatActivity {
     private ImageView imagePreview;
     private Button btnChooseImage, btnAdd, btnBack;
     private Uri selectedImageUri;
-
     private String userId;
     private String locationId;
 
@@ -87,8 +81,6 @@ public class AddActivity extends AppCompatActivity {
     private void uploadImageToFirebase() {
         String filename = "images/" + System.currentTimeMillis() + ".jpg";
         StorageReference storageRef = FirebaseStorage.getInstance().getReference(filename);
-
-        Log.d("UPLOAD_DEBUG", "Uploading: " + selectedImageUri);
 
         storageRef.putFile(selectedImageUri)
                 .addOnSuccessListener(taskSnapshot ->

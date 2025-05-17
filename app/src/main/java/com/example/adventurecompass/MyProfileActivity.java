@@ -4,20 +4,15 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,7 +22,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,7 +31,6 @@ import java.util.Map;
 public class MyProfileActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri imageUri;
-
     private ImageView profileImageView;
 
     @SuppressLint("IntentReset")
@@ -45,7 +38,6 @@ public class MyProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_profile);
-
         TextView emailText = findViewById(R.id.emailText);
         TextView nameText = findViewById(R.id.nameText);
         TextView bioText = findViewById(R.id.bioText);
@@ -76,7 +68,7 @@ public class MyProfileActivity extends AppCompatActivity {
                 }
 
                 if (imageUrl != null && !imageUrl.isEmpty()) {
-                    // Изисква библиотеката Picasso или Glide
+                    // Need Picasso or Glide library
                     Picasso.get().load(imageUrl).into(profileImageView);
                 }
             }
@@ -100,25 +92,21 @@ public class MyProfileActivity extends AppCompatActivity {
             startActivityForResult(intent, PICK_IMAGE_REQUEST);
         });
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
-            profileImageView.setImageURI(imageUri); // Визуализира снимката веднага
-            uploadImageToFirebase(); // Качва я
+            profileImageView.setImageURI(imageUri);
+            uploadImageToFirebase();
         }
     }
     private void uploadImageToFirebase() {
         if (imageUri != null) {
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             StorageReference storageRef = FirebaseStorage.getInstance().getReference("profile_pictures/" + uid + ".png");
-            String filename = uid+".png";
-            Log.d("FirebaseStorageDebug", "Path: " + storageRef.getPath());
-            Log.d("FirebaseStorageDebug", "Bucket: " + storageRef.getBucket());
-            Log.d("UPLOAD_TEST", "Uploading: " + imageUri.toString());
-            Log.d("UPLOAD_TEST", "Path: profile_pictures/" + filename);
             storageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot ->
                     storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         String imageUrl = uri.toString();
@@ -158,13 +146,11 @@ public class MyProfileActivity extends AppCompatActivity {
         bioInput.setHint("Биография");
         bioInput.setText(currentBio);
         layout.addView(bioInput);
-
         builder.setView(layout);
 
         builder.setPositiveButton("Запази", (dialog, which) -> {
             String newName = nameInput.getText().toString().trim();
             String newBio = bioInput.getText().toString().trim();
-
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
 
@@ -175,16 +161,13 @@ public class MyProfileActivity extends AppCompatActivity {
             userRef.updateChildren(updates).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Toast.makeText(this, "Профилът е обновен", Toast.LENGTH_SHORT).show();
-                    recreate(); // обновява екрана
+                    recreate();
                 } else {
                     Toast.makeText(this, "Грешка при запис", Toast.LENGTH_SHORT).show();
                 }
             });
         });
-
         builder.setNegativeButton("Отказ", (dialog, which) -> dialog.cancel());
-
         builder.show();
     }
-
 }
