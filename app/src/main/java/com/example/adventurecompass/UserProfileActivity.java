@@ -61,6 +61,7 @@ public class UserProfileActivity extends AppCompatActivity {
         blockActionsLayout.setVisibility(View.GONE);
         buttonBlock.setVisibility(View.GONE);
         findViewById(R.id.editProfileButton).setVisibility(View.GONE);
+        findViewById(R.id.buttonChats).setVisibility(View.GONE);
 
         String userId = getIntent().getStringExtra("userId");
         if (userId == null) {
