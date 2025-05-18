@@ -4,10 +4,15 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.adventurecompass.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -28,8 +33,10 @@ public class ChatActivity extends AppCompatActivity {
     private String currentUserId;
     private String otherUserId;
     private String chatId;
-
     private ChatManager chatManager;
+    private ImageView imageOtherProfile;
+    private TextView textOtherName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +46,39 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_messages);
         inputMessage = findViewById(R.id.edit_message);
         sendButton = findViewById(R.id.button_send);
+        imageOtherProfile = findViewById(R.id.image_other_profile);
+        textOtherName = findViewById(R.id.text_other_name);
 
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         otherUserId = getIntent().getStringExtra("userId");
+
+        DatabaseReference userRef = FirebaseDatabase.getInstance()
+                .getReference("users").child(otherUserId);
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String name = snapshot.child("name").getValue(String.class);
+                String profileUrl = snapshot.child("profilePictureUrl").getValue(String.class);
+
+                if (name != null) {
+                    textOtherName.setText(name);
+                }
+
+                if (profileUrl != null && !profileUrl.isEmpty()) {
+                    Glide.with(ChatActivity.this)
+                            .load(profileUrl)
+                            .placeholder(R.drawable.ic_profile_placeholder)
+                            .into(imageOtherProfile);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Optional: log or show error
+            }
+        });
+
 
         chatId = currentUserId.compareTo(otherUserId) < 0
                 ? currentUserId + "_" + otherUserId
