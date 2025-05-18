@@ -24,12 +24,15 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Type a message" />
+            android:hint="Type a message"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#FFFFFF"/>
 
         <Button
             android:id="@+id/button_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="#EBA140"
             android:text="Send" />
     </LinearLayout>
 </LinearLayout>
