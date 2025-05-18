@@ -91,6 +91,14 @@ public class MyProfileActivity extends AppCompatActivity {
             intent.setType("image/*");
             startActivityForResult(intent, PICK_IMAGE_REQUEST);
         });
+
+        Button buttonChats = findViewById(R.id.buttonChats);
+        buttonChats.setOnClickListener(v -> {
+            Intent intent = new Intent(MyProfileActivity.this, com.example.adventurecompass.chats.ChatListActivity.class);
+            startActivity(intent);
+        });
+
+
     }
 
     @Override
