@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -102,7 +103,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     public class LocationAdapterVh extends  RecyclerView.ViewHolder{
         TextView name;
         TextView description;
-        Button buttonMaps;
+        ImageButton buttonMaps;
         public LocationAdapterVh(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.namelocation);
