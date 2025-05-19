@@ -7,21 +7,27 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+
+import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomePage extends AppCompatActivity implements LocationAdapter.SelectedLocation {
+
     Toolbar toolbar;
     RecyclerView recyclerView;
     List<LocationModel> locationModelList = new ArrayList<>();
@@ -33,91 +39,88 @@ public class HomePage extends AppCompatActivity implements LocationAdapter.Selec
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
+        // Toolbar и RecyclerView
         recyclerView = findViewById(R.id.recyclerview);
         toolbar = findViewById(R.id.toolbar);
-        Button friendsButton = findViewById(R.id.friendsButton);
-        Button receivedRequestsButton = findViewById(R.id.receivedRequestsButton);
-        Button allUsersButton = findViewById(R.id.allUsersButton);
-        Button myProfileButton = findViewById(R.id.myProfileButton);
-
-
         this.setSupportActionBar(toolbar);
         this.getSupportActionBar().setTitle("");
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
+        // Load Locations
         databaseReference = FirebaseDatabase.getInstance().getReference("locations");
-
-        // Read from the database
         databaseReference.addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                locationModelList.clear(); // Clear the list before adding to it
+                locationModelList.clear();
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     LocationModel locationModel = snapshot.getValue(LocationModel.class);
                     if (locationModel != null) {
                         locationModel.setId(snapshot.getKey());
+                        locationModelList.add(locationModel);
                     }
-                    locationModelList.add(locationModel); // Add location from database to list
                 }
 
-                locationAdapter.notifyDataSetChanged(); // Notify the adapter to refresh the list
+                locationAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle possible errors.
+                // Грешка при зареждане на локации
             }
         });
 
-        locationAdapter = new LocationAdapter(locationModelList, (LocationAdapter.SelectedLocation) this);
+        locationAdapter = new LocationAdapter(locationModelList, this);
         recyclerView.setAdapter(locationAdapter);
 
-        //Button myProfileButton = findViewById(R.id.myProfileButton);
-        myProfileButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HomePage.this, MyProfileActivity.class);
-            startActivity(intent);
+        // Get profile image
+        ShapeableImageView profileImageMini = findViewById(R.id.profileImageMini);
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(currentUserId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String imageUrl = snapshot.child("profilePictureUrl").getValue(String.class);
+
+                if (imageUrl != null && !imageUrl.isEmpty()) {
+                    Picasso.get().load(imageUrl)
+                            .placeholder(R.drawable.ic_person)
+                            .into(profileImageMini);
+                } else {
+                    profileImageMini.setImageResource(R.drawable.ic_person);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                profileImageMini.setImageResource(R.drawable.ic_person);
+            }
         });
 
-        //Button allUsersButton = findViewById(R.id.allUsersButton);
-        allUsersButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HomePage.this, AllUsersActivity.class); // Ще създадем това Activity
-            startActivity(intent);
+        profileImageMini.setOnClickListener(v -> {
+            startActivity(new Intent(HomePage.this, MyProfileActivity.class));
         });
-
-        friendsButton.setOnClickListener(view -> {
-            Intent intent = new Intent(HomePage.this, FriendsListActivity.class);
-            startActivity(intent);
-        });
-
-        receivedRequestsButton.setOnClickListener(view -> {
-            Intent intent = new Intent(HomePage.this, ReceivedRequestsActivity.class);
-            startActivity(intent);
-        });
-
 
     }
+
     @Override
     public void selectedLocation(LocationModel locationModel) {
-        startActivity(new Intent(HomePage.this,SelectedLocationActivity.class).putExtra("data", locationModel));
+        startActivity(new Intent(HomePage.this, SelectedLocationActivity.class).putExtra("data", locationModel));
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.search,menu);
-
+        getMenuInflater().inflate(R.menu.search, menu);
         MenuItem menuItem = menu.findItem(R.id.search);
-
         SearchView searchView = (SearchView) menuItem.getActionView();
 
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
+            @Override public boolean onQueryTextSubmit(String query) { return false; }
 
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -127,12 +130,9 @@ public class HomePage extends AppCompatActivity implements LocationAdapter.Selec
         });
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if(id == R.id.search){
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return item.getItemId() == R.id.search || super.onOptionsItemSelected(item);
     }
 }
