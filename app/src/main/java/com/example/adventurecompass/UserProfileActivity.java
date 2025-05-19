@@ -10,6 +10,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.adventurecompass.chats.ChatActivity;
 import com.example.adventurecompass.friendship.FriendshipManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -49,6 +51,8 @@ public class UserProfileActivity extends AppCompatActivity {
         Button buttonDecline = findViewById(R.id.buttonDecline);
         Button buttonBlock = findViewById(R.id.buttonBlock);
         Button buttonUnblock = findViewById(R.id.buttonUnblock);
+        Button buttonSendMessage = findViewById(R.id.buttonMessage);
+
 
         buttonSendRequest.setVisibility(View.GONE);
         buttonRequestSent.setVisibility(View.GONE);
@@ -57,6 +61,7 @@ public class UserProfileActivity extends AppCompatActivity {
         blockActionsLayout.setVisibility(View.GONE);
         buttonBlock.setVisibility(View.GONE);
         findViewById(R.id.editProfileButton).setVisibility(View.GONE);
+        findViewById(R.id.buttonChats).setVisibility(View.GONE);
 
         String userId = getIntent().getStringExtra("userId");
         if (userId == null) {
@@ -118,6 +123,11 @@ public class UserProfileActivity extends AppCompatActivity {
                             buttonBlock.setOnClickListener(v ->
                                     friendshipManager.blockUser(currentUserId, userId, UserProfileActivity.this::finish)
                             );
+                            buttonSendMessage.setOnClickListener(v -> {
+                                Intent intent = new Intent(UserProfileActivity.this, ChatActivity.class);
+                                intent.putExtra("userId", userId);
+                                startActivity(intent);
+                            });
                             break;
 
                         case REQUEST_SENT:
