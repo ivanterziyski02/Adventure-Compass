@@ -7,14 +7,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="9"
-    android:background="@drawable/background_bg"
+    android:background="#EBA040"
     tools:context=".HomePage">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="#f5d49d"
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
 
