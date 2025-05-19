@@ -1,178 +1,266 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MyProfileActivity"
+    android:fillViewport="true"
+    android:background="@drawable/background_profile_image"
     android:padding="16dp">
 
-    <!-- Снимка -->
-    <ImageView
-        android:id="@+id/profileImageView"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@drawable/ic_person"
-        android:scaleType="centerCrop"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <!-- Email -->
-    <TextView
-        android:id="@+id/emailText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Email:"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/profileImageView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        <!-- Кръгла профилна снимка -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/profileImageView"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/ic_person"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/CircleImage"
+            app:strokeColor="@color/teal_700"
+            app:strokeWidth="2dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Name -->
-    <TextView
-        android:id="@+id/nameText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Name:"
-        app:layout_constraintTop_toBottomOf="@id/emailText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+        <!-- Карта с информация -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/infoCard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            android:layout_marginTop="45dp"
+            app:layout_constraintTop_toBottomOf="@id/profileImageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Bio -->
-    <TextView
-        android:id="@+id/bioText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Bio:"
-        app:layout_constraintTop_toBottomOf="@id/nameText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="#f5d39d"
+                android:gravity="center">
 
-    <!-- Registration date -->
-    <TextView
-        android:id="@+id/registrationDateText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Регистрация:"
-        app:layout_constraintTop_toBottomOf="@id/bioText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+                <TextView
+                    android:id="@+id/emailText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email:"
+                    android:textStyle="bold"
+                    android:textAlignment="center" />
 
-    <!-- Edit profile button -->
-    <Button
-        android:id="@+id/editProfileButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Редактирай"
-        app:layout_constraintTop_toBottomOf="@id/registrationDateText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
-    <Button
-        android:id="@+id/buttonChats"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Чатове"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/editProfileButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+                <TextView
+                    android:id="@+id/nameText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Name:"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    android:textAlignment="center" />
 
+                <TextView
+                    android:id="@+id/bioText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bio:"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    android:textAlignment="center" />
 
-    <!-- Send request button -->
-    <Button
-        android:id="@+id/buttonSendRequest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Изпрати покана"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/editProfileButton"
-        app:layout_constraintStart_toStartOf="parent" />
+                <TextView
+                    android:id="@+id/registrationDateText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Регистрация:"
+                    android:textStyle="bold"
+                    android:layout_marginTop="8dp"
+                    android:textAlignment="center" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-    <!-- Request sent -->
-    <Button
-        android:id="@+id/buttonRequestSent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Поканата е изпратена"
-        android:enabled="false"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/editProfileButton"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- Accept / Decline -->
-    <LinearLayout
-        android:id="@+id/buttonRequestActions"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/editProfileButton"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <Button
-            android:id="@+id/buttonAccept"
+        <!-- Статични бутони с нова подредба -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonFriendRequests"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Приеми" />
+            android:text="Покани за приятелство"
+            android:layout_marginTop="16dp"
+            app:icon="@drawable/ic_request"
+            app:iconTint="@null"
+            app:backgroundTint="#EBA03F"
+            app:iconPadding="8dp"
+            app:cornerRadius="16dp"
+            app:layout_constraintTop_toBottomOf="@id/infoCard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-        <Button
-            android:id="@+id/buttonDecline"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonAllUsers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Откажи"
-            android:layout_marginStart="8dp"/>
-    </LinearLayout>
+            android:text="Всички потребители"
+            android:layout_marginTop="8dp"
+            app:icon="@drawable/ic_friends"
+            app:iconTint="@null"
+            app:backgroundTint="#EBA03F"
+            app:iconPadding="8dp"
+            app:cornerRadius="16dp"
+            app:layout_constraintTop_toBottomOf="@id/buttonFriendRequests"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Friend actions -->
-    <LinearLayout
-        android:id="@+id/friendActions"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/editProfileButton"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <Button
-            android:id="@+id/buttonMessage"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/editProfileButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Изпрати съобщение" />
+            android:text="Редактирай"
+            app:iconTint="@null"
+            app:icon="@drawable/ic_edit"
+            app:backgroundTint="#EBA03F"
+            android:layout_marginTop="8dp"
+            app:cornerRadius="16dp"
+            app:layout_constraintTop_toBottomOf="@id/buttonAllUsers"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-        <Button
-            android:id="@+id/buttonBlock"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonFriends"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Блокирай"
-            android:layout_marginStart="8dp"/>
+            android:text="Приятели"
+            android:layout_marginTop="8dp"
+            app:icon="@drawable/ic_friends"
+            app:iconTint="@null"
+            app:backgroundTint="#EBA03F"
+            app:iconPadding="8dp"
+            app:cornerRadius="16dp"
+            app:layout_constraintTop_toBottomOf="@id/editProfileButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    </LinearLayout>
-
-    <!-- Unblock layout -->
-    <LinearLayout
-        android:id="@+id/blockActionsLayout"
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/editProfileButton"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp">
-
-        <Button
-            android:id="@+id/buttonUnblock"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonChats"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Разблокирай"/>
-    </LinearLayout>
+            android:text="Чатове"
+            app:icon="@drawable/ic_chat"
+            app:iconTint="@null"
+            app:backgroundTint="#EBA03F"
+            app:iconPadding="8dp"
+            android:layout_marginTop="8dp"
+            app:cornerRadius="16dp"
+            app:layout_constraintTop_toBottomOf="@id/buttonFriends"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Изход"
+            android:layout_marginTop="8dp"
+            app:icon="@drawable/ic_logout"
+            app:backgroundTint="#EBA03F"
+            app:iconPadding="8dp"
+            app:cornerRadius="16dp"
+            app:iconTint="@null"
+            app:layout_constraintTop_toBottomOf="@id/buttonChats"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Динамични бутони -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonSendRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Изпрати покана"
+            android:visibility="gone"
+            app:iconPadding="8dp"
+            app:cornerRadius="16dp"
+            app:layout_constraintTop_toBottomOf="@id/buttonChats"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonRequestSent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Поканата е изпратена"
+            android:enabled="false"
+            android:visibility="gone"
+            app:iconPadding="8dp"
+            app:cornerRadius="16dp"
+            app:layout_constraintTop_toBottomOf="@id/buttonSendRequest"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/buttonRequestActions"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/buttonRequestSent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="8dp">
+
+            <Button
+                android:id="@+id/buttonAccept"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Приеми" />
+
+            <Button
+                android:id="@+id/buttonDecline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Откажи"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/friendActions"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/buttonRequestActions"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="8dp">
+
+            <Button
+                android:id="@+id/buttonMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Изпрати съобщение" />
+
+            <Button
+                android:id="@+id/buttonBlock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Блокирай"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/blockActionsLayout"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/friendActions"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/buttonUnblock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Разблокирай" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

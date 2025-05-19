@@ -10,7 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.adventurecompass.chats.ChatActivity;
 import com.example.adventurecompass.friendship.FriendshipManager;
 import com.google.firebase.auth.FirebaseAuth;
