@@ -32,7 +32,7 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_profile);
+        setContentView(R.layout.activity_user_profile);
 
         friendshipManager = new FriendshipManager(this);
         emailText = findViewById(R.id.emailText);
@@ -59,8 +59,6 @@ public class UserProfileActivity extends AppCompatActivity {
         friendActions.setVisibility(View.GONE);
         blockActionsLayout.setVisibility(View.GONE);
         buttonBlock.setVisibility(View.GONE);
-        findViewById(R.id.editProfileButton).setVisibility(View.GONE);
-        findViewById(R.id.buttonChats).setVisibility(View.GONE);
 
         String userId = getIntent().getStringExtra("userId");
         if (userId == null) {
