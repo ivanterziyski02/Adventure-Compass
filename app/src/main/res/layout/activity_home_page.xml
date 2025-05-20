@@ -7,14 +7,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="9"
-    android:background="#EBA040"
+    android:background="#2c5f47"
     tools:context=".HomePage">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#f5d49d"
+            android:background="#eca141"
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
 
@@ -42,8 +42,6 @@
                 android:clickable="true"
                 android:focusable="true" />
         </androidx.appcompat.widget.Toolbar>
-
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
