@@ -1,16 +1,16 @@
 package com.example.adventurecompass;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class LocationModel  implements Serializable {
-    String id,name,description;
+    private String id,name,description, imageUrl;
 
     public LocationModel(){}
-    public LocationModel(String id,String name, String description) {
+    public LocationModel(String id,String name, String description, String imageUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.imageUrl = imageUrl;
     }
     public LocationModel(String locationName) {
         this.name = locationName;
@@ -38,5 +38,13 @@ public class LocationModel  implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

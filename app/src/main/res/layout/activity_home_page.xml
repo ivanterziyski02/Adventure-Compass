@@ -7,32 +7,41 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="9"
-    android:background="@drawable/background_bg"
+    android:background="#2c5f47"
     tools:context=".HomePage">
-    <LinearLayout
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp">
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textSize="16sp"
-                android:textColor="@color/white"
-                android:text="Locations"/>
-        </androidx.appcompat.widget.Toolbar>
-    </LinearLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:background="#eca141"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="8"
-        android:background="@drawable/recyclerview_bg"
-        android:padding="10dp">
+            <TextView
+                android:id="@+id/toolbarTitle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="Locations"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/white" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/profileImageMini"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_person"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/CircleImage"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1dp"
+                android:contentDescription="Моят профил"
+                android:clickable="true"
+                android:focusable="true" />
+        </androidx.appcompat.widget.Toolbar>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
@@ -40,52 +49,5 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="3dp"
             android:layout_marginTop="3dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        android:gravity="center">
-
-        <Button
-            android:id="@+id/myProfileButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Моят профил" />
-
-        <Button
-            android:id="@+id/allUsersButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Всички потребители" />
-    </LinearLayout>
-
-    <!-- Втори ред -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        android:gravity="center"
-        android:layout_marginTop="8dp">
-
-        <Button
-            android:id="@+id/friendsButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Моите приятели" />
-
-        <Button
-            android:id="@+id/receivedRequestsButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Получени покани" />
-    </LinearLayout>
 
 </LinearLayout>

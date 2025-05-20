@@ -3,15 +3,21 @@ package com.example.adventurecompass;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +46,25 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
         LocationModel locationModel = locationModelList.get(position);
         String location = locationModel.getName();
         String description = locationModel.getDescription();
+
+        String imageUrl = locationModel.getImageUrl();
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Picasso.get().load(imageUrl)
+                    .placeholder(R.drawable.placeholder)
+                    .into(holder.locationImage, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d("ImageTest", "Image loaded successfully for: " + locationModel.getName());
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Log.e("ImageTest", "Error loading image for: " + locationModel.getName(), e);
+                        }
+                    });
+        } else {
+            holder.locationImage.setImageResource(R.drawable.placeholder);
+        }
 
         holder.name.setText(location);
         holder.description.setText(description);
@@ -102,13 +127,15 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     public class LocationAdapterVh extends  RecyclerView.ViewHolder{
         TextView name;
         TextView description;
-        Button buttonMaps;
+        ImageButton buttonMaps;
+        ImageView locationImage;
+
         public LocationAdapterVh(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.namelocation);
             description = itemView.findViewById(R.id.descriptionLocation);
-
             buttonMaps = itemView.findViewById(R.id.maps);
+            locationImage = itemView.findViewById(R.id.locationImage);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
