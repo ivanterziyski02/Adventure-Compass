@@ -9,29 +9,18 @@
     android:gravity="center"
     tools:context=".MainActivity">
 
-    <!-- Лого/заглавие -->
-
-    <!-- Email Label -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:text="ADVENTURECOMPASS"
+        android:layout_marginBottom="70dp"
+        android:text="ADVENTURE COMPASS"
+        android:fontFamily="@font/lora"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold|italic"
+        android:letterSpacing="0.05" />
 
-    <TextView
-        android:id="@+id/textView_register_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Email"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_marginBottom="4dp" />
-
-    <!-- Email Input -->
     <EditText
         android:id="@+id/editText_register_email"
         android:layout_width="match_parent"
@@ -43,19 +32,9 @@
         android:textColor="#000000"
         android:textColorHint="#888888"
         android:textSize="14sp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="90dp" />
 
-    <!-- Password Label -->
-    <TextView
-        android:id="@+id/textView_register_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Password"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:layout_marginBottom="4dp" />
-
-    <!-- Password Input -->
     <EditText
         android:id="@+id/editText_register_password"
         android:layout_width="match_parent"
@@ -67,9 +46,9 @@
         android:textColor="#000000"
         android:textColorHint="#888888"
         android:textSize="14sp"
-        android:layout_marginBottom="24dp" />
+        android:layout_marginBottom="24dp"
+        android:layout_marginTop="4dp" />
 
-    <!-- Login Button -->
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/sign_in"
         android:layout_width="match_parent"
@@ -80,10 +59,8 @@
         android:textStyle="bold"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
-        android:background="@drawable/rounded_button"
-        />
+        android:background="@drawable/rounded_button" />
 
-    <!-- Sign Up Link -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
