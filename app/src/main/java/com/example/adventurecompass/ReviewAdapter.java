@@ -31,20 +31,42 @@ public class ReviewAdapter extends FirebaseRecyclerAdapter<ReviewModel, ReviewAd
     @Override
     protected void onBindViewHolder(@NonNull myViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull ReviewModel model) {
         holder.userName.setText(model.getUserName());
-        holder.description.setText(model.getDescription());
+        String fullText = model.getDescription();
+        String[] words = fullText.trim().split("\\s+");
 
-        Glide.with(holder.img.getContext())
-                .load(model.getUrl())
-                .placeholder(com.google.firebase.database.R.drawable.common_google_signin_btn_icon_dark)
-                .error(com.firebase.ui.database.R.drawable.common_google_signin_btn_icon_dark_normal)
-                .into(holder.img);
+        if (words.length > 7) {
+            StringBuilder shortText = new StringBuilder();
+            for (int i = 0; i < 7; i++) {
+                shortText.append(words[i]).append(" ");
+            }
+            shortText.append("... View more");
+            holder.description.setText(shortText.toString().trim());
+        } else {
+            holder.description.setText(fullText);
+        }
 
+        // Load location image
+        Glide.with(holder.locationImage.getContext())
+                .load(model.getLocationImageUrl())
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
+                .into(holder.locationImage);
+
+        // Show/hide edit/delete buttons if current user is the author
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         boolean isAuthor = currentUser != null && currentUser.getUid().equals(model.getUserId());
 
         holder.btnEdit.setVisibility(isAuthor ? View.VISIBLE : View.GONE);
         holder.btnDelete.setVisibility(isAuthor ? View.VISIBLE : View.GONE);
 
+        // Click opens detail activity
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(holder.itemView.getContext(), ReviewDetailActivity.class);
+            intent.putExtra("review", model);
+            holder.itemView.getContext().startActivity(intent);
+        });
+
+        // Edit button logic
         holder.btnEdit.setOnClickListener(v -> {
             if (!isAuthor) {
                 Toast.makeText(holder.itemView.getContext(), "You are not the author of this review", Toast.LENGTH_SHORT).show();
@@ -56,10 +78,11 @@ public class ReviewAdapter extends FirebaseRecyclerAdapter<ReviewModel, ReviewAd
             intent.putExtra("locationId", locationId);
             intent.putExtra("userName", model.getUserName());
             intent.putExtra("description", model.getDescription());
-            intent.putExtra("imageUrl", model.getUrl());
+            intent.putExtra("imageUrl", model.getLocationImageUrl());
             holder.itemView.getContext().startActivity(intent);
         });
 
+        // Delete button logic
         holder.btnDelete.setOnClickListener(v -> {
             if (!isAuthor) {
                 Toast.makeText(holder.itemView.getContext(), "You are not the author of this review", Toast.LENGTH_SHORT).show();
@@ -92,13 +115,15 @@ public class ReviewAdapter extends FirebaseRecyclerAdapter<ReviewModel, ReviewAd
     }
 
     static class myViewHolder extends RecyclerView.ViewHolder {
-        CircleImageView img;
+        CircleImageView profileImage;
+        CircleImageView locationImage;
         TextView userName, description;
         Button btnEdit, btnDelete;
 
         public myViewHolder(@NonNull View itemView) {
             super(itemView);
-            img = itemView.findViewById(R.id.imgLoc);
+            profileImage = itemView.findViewById(R.id.profileImage);
+            locationImage = itemView.findViewById(R.id.imgLoc);
             userName = itemView.findViewById(R.id.nametext);
             description = itemView.findViewById(R.id.descriptiontext);
             btnEdit = itemView.findViewById(R.id.btnEdit);

@@ -10,10 +10,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.*;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
@@ -21,19 +22,17 @@ import java.util.Map;
 
 public class AddActivity extends AppCompatActivity {
 
-    private EditText userName, description;
+    private EditText description;
     private ImageView imagePreview;
     private Button btnChooseImage, btnAdd, btnBack;
     private Uri selectedImageUri;
-    private String userId;
-    private String locationId;
+    private String userId, locationId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
-        userName = findViewById(R.id.txtName);
         description = findViewById(R.id.txtEmail);
         imagePreview = findViewById(R.id.imagePreview);
         btnChooseImage = findViewById(R.id.btnChooseImage);
@@ -41,8 +40,8 @@ public class AddActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
 
         locationId = getIntent().getStringExtra("LOCATION_ID");
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             userId = currentUser.getUid();
         }
@@ -86,8 +85,7 @@ public class AddActivity extends AppCompatActivity {
                 .addOnSuccessListener(taskSnapshot ->
                         storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                             String imageUrl = uri.toString();
-                            insertData(locationId, imageUrl);
-                            clearAll();
+                            fetchUserDataAndInsertReview(imageUrl);
                         })
                 )
                 .addOnFailureListener(e ->
@@ -95,28 +93,46 @@ public class AddActivity extends AppCompatActivity {
                 );
     }
 
-    private void insertData(String locationId, String imageUrl) {
+    private void fetchUserDataAndInsertReview(String locationImageUrl) {
         if (userId == null || locationId == null || locationId.isEmpty()) {
             Toast.makeText(this, "Невалиден потребител или място", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("userId", userId);
-        map.put("userName", userName.getText().toString());
-        map.put("description", description.getText().toString());
-        map.put("url", imageUrl);
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String name = snapshot.child("name").getValue(String.class);
+                String profileUrl = snapshot.child("profilePictureUrl").getValue(String.class);
 
-        FirebaseDatabase.getInstance().getReference("reviews").child(locationId).push()
-                .setValue(map)
-                .addOnSuccessListener(unused ->
-                        Toast.makeText(this, "Данните са запазени", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Грешка при запис", Toast.LENGTH_SHORT).show());
+                if (name == null || name.isEmpty()) name = "Anonymous";
+
+                Map<String, Object> map = new HashMap<>();
+                map.put("userId", userId);
+                map.put("userName", name);
+                map.put("description", description.getText().toString());
+                map.put("locationImageUrl", locationImageUrl);
+                map.put("profilePictureUrl", profileUrl != null ? profileUrl : "");
+
+                FirebaseDatabase.getInstance().getReference("reviews").child(locationId).push()
+                        .setValue(map)
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(AddActivity.this, "Ревюто е записано", Toast.LENGTH_SHORT).show();
+                            clearAll();
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(AddActivity.this, "Грешка при запис", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(AddActivity.this, "Грешка при четене на потребител: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void clearAll() {
-        userName.setText("");
         description.setText("");
         imagePreview.setImageResource(R.drawable.ic_launcher_background);
         selectedImageUri = null;
