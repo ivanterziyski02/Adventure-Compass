@@ -11,22 +11,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.adventurecompass.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final List<MessageModel> messageList;
     private final String currentUserId;
+    private boolean isBlocked = false;
     private static final int VIEW_TYPE_SENT = 1;
     private static final int VIEW_TYPE_RECEIVED = 2;
 
     public MessageAdapter(List<MessageModel> messageList) {
         this.messageList = messageList;
         this.currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.isBlocked = blocked;
     }
 
     @Override
@@ -67,54 +68,54 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             sentHolder.textSenderName.setText("Me");
             sentHolder.imageProfile.setVisibility(isLastFromUser ? View.VISIBLE : View.INVISIBLE);
 
-            DatabaseReference currentUserRef = FirebaseDatabase.getInstance()
-                    .getReference("users").child(currentUserId);
+            FirebaseDatabase.getInstance().getReference("users").child(currentUserId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String profileUrl = snapshot.child("profilePictureUrl").getValue(String.class);
+                            if (profileUrl != null && !profileUrl.isEmpty()) {
+                                Glide.with(sentHolder.imageProfile.getContext())
+                                        .load(profileUrl)
+                                        .placeholder(R.drawable.ic_profile_placeholder)
+                                        .into(sentHolder.imageProfile);
+                            }
+                        }
 
-            currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String profileUrl = snapshot.child("profilePictureUrl").getValue(String.class);
-                    if (profileUrl != null && !profileUrl.isEmpty()) {
-                        Glide.with(sentHolder.imageProfile.getContext())
-                                .load(profileUrl)
-                                .placeholder(R.drawable.ic_profile_placeholder)
-                                .into(sentHolder.imageProfile);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {}
-            });
-
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                    });
 
         } else {
             ReceivedViewHolder receivedHolder = (ReceivedViewHolder) holder;
             receivedHolder.textMessage.setText(message.getText());
             receivedHolder.textTime.setText(time);
-
-            DatabaseReference userRef = FirebaseDatabase.getInstance()
-                    .getReference("users").child(message.getSenderId());
-
-            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String name = snapshot.child("name").getValue(String.class);
-                    String profileUrl = snapshot.child("profilePictureUrl").getValue(String.class);
-
-                    receivedHolder.textSenderName.setText(name != null ? name : "Unknown");
-                    if (profileUrl != null && !profileUrl.isEmpty()) {
-                        Glide.with(receivedHolder.imageProfile.getContext())
-                                .load(profileUrl)
-                                .placeholder(R.drawable.ic_profile_placeholder)
-                                .into(receivedHolder.imageProfile);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {}
-            });
-
             receivedHolder.imageProfile.setVisibility(isLastFromUser ? View.VISIBLE : View.INVISIBLE);
+
+            if (isBlocked) {
+                receivedHolder.textSenderName.setText("Blocked user");
+                receivedHolder.imageProfile.setImageResource(R.drawable.ic_person);
+            } else {
+                FirebaseDatabase.getInstance().getReference("users")
+                        .child(message.getSenderId())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String name = snapshot.child("name").getValue(String.class);
+                                String profileUrl = snapshot.child("profilePictureUrl").getValue(String.class);
+
+                                receivedHolder.textSenderName.setText(name != null ? name : "Unknown");
+                                if (profileUrl != null && !profileUrl.isEmpty()) {
+                                    Glide.with(receivedHolder.imageProfile.getContext())
+                                            .load(profileUrl)
+                                            .placeholder(R.drawable.ic_profile_placeholder)
+                                            .into(receivedHolder.imageProfile);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {}
+                        });
+            }
         }
     }
 
@@ -148,5 +149,4 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             textSenderName = itemView.findViewById(R.id.text_sender_name);
         }
     }
-
 }

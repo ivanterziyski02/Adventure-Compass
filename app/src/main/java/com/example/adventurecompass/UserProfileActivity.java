@@ -138,6 +138,16 @@ public class UserProfileActivity extends AppCompatActivity {
                                         buttonRequestActions.setVisibility(View.GONE);
                                         friendActions.setVisibility(View.VISIBLE);
                                         buttonBlock.setVisibility(View.VISIBLE);
+
+                                        buttonSendMessage.setOnClickListener(view-> {
+                                            Intent intent = new Intent(UserProfileActivity.this, ChatActivity.class);
+                                            intent.putExtra("userId", userId);
+                                            startActivity(intent);
+                                        });
+
+                                        buttonBlock.setOnClickListener(view -> {
+                                            friendshipManager.blockUser(currentUserId, userId, UserProfileActivity.this::finish);
+                                        });
                                     })
                             );
                             buttonDecline.setOnClickListener(v ->

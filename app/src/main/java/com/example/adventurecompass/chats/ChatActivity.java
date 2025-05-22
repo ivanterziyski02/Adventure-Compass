@@ -6,20 +6,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.example.adventurecompass.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +31,6 @@ public class ChatActivity extends AppCompatActivity {
     private ImageView imageOtherProfile;
     private TextView textOtherName;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,47 +45,89 @@ public class ChatActivity extends AppCompatActivity {
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         otherUserId = getIntent().getStringExtra("userId");
 
-        DatabaseReference userRef = FirebaseDatabase.getInstance()
-                .getReference("users").child(otherUserId);
-
-        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String name = snapshot.child("name").getValue(String.class);
-                String profileUrl = snapshot.child("profilePictureUrl").getValue(String.class);
-
-                if (name != null) {
-                    textOtherName.setText(name);
-                }
-
-                if (profileUrl != null && !profileUrl.isEmpty()) {
-                    Glide.with(ChatActivity.this)
-                            .load(profileUrl)
-                            .placeholder(R.drawable.ic_profile_placeholder)
-                            .into(imageOtherProfile);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Optional: log or show error
-            }
-        });
-
-
         chatId = currentUserId.compareTo(otherUserId) < 0
                 ? currentUserId + "_" + otherUserId
                 : otherUserId + "_" + currentUserId;
 
+        messagesRef = FirebaseDatabase.getInstance().getReference("messages").child(chatId);
         messageList = new ArrayList<>();
         chatManager = new ChatManager();
+
         messageAdapter = new MessageAdapter(messageList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(messageAdapter);
 
-        messagesRef = FirebaseDatabase.getInstance().getReference("messages").child(chatId);
+        checkBlockStatus();
+    }
 
-        loadMessages();
+    private void checkBlockStatus() {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+
+        usersRef.child(currentUserId).child("blocked").child(otherUserId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                        boolean iBlockedThem = snapshot1.exists();
+
+                        usersRef.child(otherUserId).child("blocked").child(currentUserId)
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot2) {
+                                        boolean theyBlockedMe = snapshot2.exists();
+                                        boolean isBlocked = iBlockedThem || theyBlockedMe;
+
+                                        loadMessages(isBlocked);
+
+                                        if (isBlocked) {
+                                            disableChatUI("Blocked user");
+                                        } else {
+                                            checkFriendshipStatus();
+                                        }
+                                    }
+
+                                    @Override public void onCancelled(@NonNull DatabaseError error) {}
+                                });
+                    }
+
+                    @Override public void onCancelled(@NonNull DatabaseError error) {}
+                });
+    }
+
+    private void checkFriendshipStatus() {
+        DatabaseReference friendsRef = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(currentUserId)
+                .child("friends")
+                .child(otherUserId);
+
+        friendsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean areFriends = snapshot.exists();
+
+                if (!areFriends) {
+                    disableChatUI("Not friends");
+                } else {
+                    enableChatUI();
+                    loadUserInfo();
+                }
+            }
+
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    private void disableChatUI(String reason) {
+        inputMessage.setEnabled(false);
+        sendButton.setEnabled(false);
+        inputMessage.setHint(reason);
+        textOtherName.setText("Unavailable");
+        imageOtherProfile.setImageResource(R.drawable.ic_person);
+    }
+
+    private void enableChatUI() {
+        sendButton.setEnabled(true);
+        inputMessage.setEnabled(true);
 
         sendButton.setOnClickListener(v -> {
             String text = inputMessage.getText().toString().trim();
@@ -103,7 +138,7 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void loadMessages() {
+    private void loadMessages(boolean isBlocked) {
         messagesRef.addValueEventListener(new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -115,21 +150,35 @@ public class ChatActivity extends AppCompatActivity {
                         messageList.add(message);
                     }
                 }
+                messageAdapter.setBlocked(isBlocked);
                 messageAdapter.notifyDataSetChanged();
                 recyclerView.scrollToPosition(messageList.size() - 1);
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Handle errors
-            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 
-    private void sendMessage(String text) {
-        long timestamp = System.currentTimeMillis();
-        MessageModel message = new MessageModel(currentUserId, otherUserId, text, timestamp);
-        messagesRef.push().setValue(message);
-        inputMessage.setText("");
+    private void loadUserInfo() {
+        DatabaseReference userRef = FirebaseDatabase.getInstance()
+                .getReference("users").child(otherUserId);
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String name = snapshot.child("name").getValue(String.class);
+                String profileUrl = snapshot.child("profilePictureUrl").getValue(String.class);
+
+                if (name != null) textOtherName.setText(name);
+                if (profileUrl != null && !profileUrl.isEmpty()) {
+                    Glide.with(ChatActivity.this)
+                            .load(profileUrl)
+                            .placeholder(R.drawable.ic_profile_placeholder)
+                            .into(imageOtherProfile);
+                }
+            }
+
+            @Override public void onCancelled(@NonNull DatabaseError error) {}
+        });
     }
 }
