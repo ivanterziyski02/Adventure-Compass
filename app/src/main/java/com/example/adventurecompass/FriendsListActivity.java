@@ -2,8 +2,6 @@ package com.example.adventurecompass;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,7 +15,6 @@ public class FriendsListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private UserAdapter adapter;
-    private ProgressBar progressBar;
     private final List<UserModel> friendList = new ArrayList<>();
     private String currentUserId;
 
@@ -26,8 +23,7 @@ public class FriendsListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends_list);
 
-        recyclerView = findViewById(R.id.recyclerView);
-        progressBar = findViewById(R.id.progressBar);
+        recyclerView = findViewById(R.id.requestsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new UserAdapter(this, friendList);
@@ -50,17 +46,14 @@ public class FriendsListActivity extends AppCompatActivity {
                                 break;
                             }
                         }
-
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {}
                     });
         });
-
         loadFriends();
     }
 
     private void loadFriends() {
-        progressBar.setVisibility(View.VISIBLE);
         DatabaseReference friendsRef = FirebaseDatabase.getInstance()
                 .getReference("users").child(currentUserId).child("friends");
 
@@ -71,7 +64,6 @@ public class FriendsListActivity extends AppCompatActivity {
 
                 if (!snapshot.exists() || snapshot.getChildrenCount() == 0) {
                     adapter.notifyDataSetChanged();
-                    progressBar.setVisibility(View.GONE);
                     return;
                 }
 
@@ -95,20 +87,15 @@ public class FriendsListActivity extends AppCompatActivity {
                                     }
 
                                     if (friendList.size() == snapshot.getChildrenCount()) {
-                                        progressBar.setVisibility(View.GONE);
                                     }
                                 }
-
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {}
                             });
                 }
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                progressBar.setVisibility(View.GONE);
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 }

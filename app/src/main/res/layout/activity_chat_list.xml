@@ -6,6 +6,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="@drawable/background_image"
     tools:context=".chats.ChatListActivity">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -16,7 +19,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:padding="8dp"
+        android:layout_marginTop="8dp"
+        android:background="#f5d39d"
+        android:padding="15dp"
         tools:listitem="@layout/item_chat"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

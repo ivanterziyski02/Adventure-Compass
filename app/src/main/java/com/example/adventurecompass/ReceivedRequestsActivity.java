@@ -2,8 +2,6 @@ package com.example.adventurecompass;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,7 +15,6 @@ public class ReceivedRequestsActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private UserAdapter userAdapter;
-    private TextView emptyText;
     private String currentUserId;
     private final List<UserModel> requestList = new ArrayList<>();
 
@@ -27,7 +24,6 @@ public class ReceivedRequestsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_received_requests);
 
         recyclerView = findViewById(R.id.requestsRecyclerView);
-        emptyText = findViewById(R.id.emptyText);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -76,7 +72,6 @@ public class ReceivedRequestsActivity extends AppCompatActivity {
                 requestList.clear();
 
                 if (!snapshot.exists()) {
-                    emptyText.setVisibility(View.VISIBLE);
                     userAdapter.notifyDataSetChanged();
                     return;
                 }
@@ -95,7 +90,6 @@ public class ReceivedRequestsActivity extends AppCompatActivity {
                                         if (user != null) {
                                             requestList.add(user);
                                             userAdapter.notifyItemInserted(requestList.size() - 1);
-                                            emptyText.setVisibility(View.GONE);
                                         }
                                     }
                                 }
@@ -105,16 +99,11 @@ public class ReceivedRequestsActivity extends AppCompatActivity {
                             });
                 }
 
-                if (snapshot.getChildrenCount() == 0) {
-                    emptyText.setVisibility(View.VISIBLE);
-                }
+                if (snapshot.getChildrenCount() == 0) {}
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                emptyText.setText("Грешка при зареждане.");
-                emptyText.setVisibility(View.VISIBLE);
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 }
