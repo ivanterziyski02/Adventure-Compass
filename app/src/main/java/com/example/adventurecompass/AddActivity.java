@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -11,11 +12,14 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.gson.Gson;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +62,9 @@ public class AddActivity extends AppCompatActivity {
             if (selectedImageUri != null) {
                 uploadImageToFirebase();
             } else {
-                Toast.makeText(this, "Моля, изберете снимка", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Моля, изберете снимка", Toast.LENGTH_SHORT).show();
+                insertData(locationId, "");
+                clearAll();
             }
         });
 
@@ -109,11 +115,60 @@ public class AddActivity extends AppCompatActivity {
 
         FirebaseDatabase.getInstance().getReference("reviews").child(locationId).push()
                 .setValue(map)
-                .addOnSuccessListener(unused ->
-                        Toast.makeText(this, "Данните са запазени", Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this,"!"+ userId+"!", Toast.LENGTH_SHORT).show();
+                    FirebaseDatabase.getInstance().getReference("locations").child(locationId).child("name")
+                            .get()
+                            .addOnSuccessListener(snapshot -> {
+                                String locationName = snapshot.getValue(String.class);
+                                if (locationName != null && !locationName.isEmpty()) {
+                                    callSendNotificationFunction(userId, locationName);
+                                } else {
+                                    callSendNotificationFunction(userId, "Място");
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("LOAD_LOC_NAME", "Неуспешно зареждане на име на локация", e);
+                                callSendNotificationFunction(userId, "Място");
+                            });
+                })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Грешка при запис", Toast.LENGTH_SHORT).show());
     }
+
+    private void callSendNotificationFunction(String userId, String locationName) {
+        if (userId == null || locationName == null) {
+            Log.e("NOTIF_ERROR", "userId или locationName са null");
+            return;
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("userId", userId);
+        data.put("locationName", locationName);
+
+        Log.d("CALL_NOTIFICATION", "Sending userId=" + userId + ", locationName=" + locationName);
+        Log.d("DEBUG_FIREBASE_CALL", "Sending data map: " + new Gson().toJson(data));
+        FirebaseFunctions.getInstance("us-central1")
+                .getHttpsCallable("sendNotificationOnReview")
+                .call(data)
+                .addOnSuccessListener(result -> {Object resultData = result.getData();
+                    Log.d("NOTIF_SUCCESS", "Callable returned: " + resultData);
+
+                    if (resultData instanceof Map) {
+                        Map<?, ?> resultMap = (Map<?, ?>) resultData;
+                        Object success = resultMap.get("success");
+                        Log.d("NOTIF_SUCCESS", "Success field: " + success);
+                    }
+
+                    Toast.makeText(this, "Известията са изпратени", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Грешка при изпращането: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e("NOTIF_RESULT", "Error calling function", e);
+                });
+    }
+
+
 
     private void clearAll() {
         userName.setText("");
