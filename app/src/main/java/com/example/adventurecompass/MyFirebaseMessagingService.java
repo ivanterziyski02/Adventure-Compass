@@ -3,6 +3,8 @@ package com.example.adventurecompass;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
@@ -29,15 +31,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d("🔥FCM", "DATA: "+data);
         String locationName = data.get("locationName");
         String userName = data.get("userName");
+        String locationId = data.get("LOCATION_ID");
 
         String title = "Ново мнение";
         String message = userName + " публикува мнение за " + locationName;
 
-        showNotification(title, message);
+        showNotification(title, message,locationId);
     }
 
-    private void showNotification(String title, String message) {
+    private void showNotification(String title, String message, String locationId) {
         String channelId = "default_channel_id";
+
+        // 1. Intent за отваряне на ReviewListActivity (или друга активност)
+        Intent intent = new Intent(this, ReviewActivity.class); // смени с твоя активност
+        intent.putExtra("LOCATION_ID", locationId);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE
+        );
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
@@ -50,23 +65,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic_notification) // добави иконка с това име в drawable!
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true);
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent);
 
         NotificationManagerCompat managerCompat = NotificationManagerCompat.from(this);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
         managerCompat.notify(101, builder.build());
     }
+
 }

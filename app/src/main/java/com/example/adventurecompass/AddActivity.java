@@ -122,22 +122,22 @@ public class AddActivity extends AppCompatActivity {
                             .addOnSuccessListener(snapshot -> {
                                 String locationName = snapshot.getValue(String.class);
                                 if (locationName != null && !locationName.isEmpty()) {
-                                    callSendNotificationFunction(userId, locationName);
+                                    callSendNotificationFunction(userId, locationName, locationId);
                                 } else {
-                                    callSendNotificationFunction(userId, "Място");
+                                    callSendNotificationFunction(userId, "Място",locationId);
                                 }
                             })
                             .addOnFailureListener(e -> {
                                 Log.e("LOAD_LOC_NAME", "Неуспешно зареждане на име на локация", e);
-                                callSendNotificationFunction(userId, "Място");
+                                callSendNotificationFunction(userId, "Място",locationId);
                             });
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Грешка при запис", Toast.LENGTH_SHORT).show());
     }
 
-    private void callSendNotificationFunction(String userId, String locationName) {
-        if (userId == null || locationName == null) {
+    private void callSendNotificationFunction(String userId, String locationName, String locationId) {
+        if (userId == null || locationName == null || locationId == null) {
             Log.e("NOTIF_ERROR", "userId или locationName са null");
             return;
         }
@@ -145,8 +145,9 @@ public class AddActivity extends AppCompatActivity {
         Map<String, Object> data = new HashMap<>();
         data.put("userId", userId);
         data.put("locationName", locationName);
+        data.put("LOCATION_ID", locationId);
 
-        Log.d("CALL_NOTIFICATION", "Sending userId=" + userId + ", locationName=" + locationName);
+        Log.d("CALL_NOTIFICATION", "Sending userId= " + userId + ", locationName= " + locationName + ", location_id= "+locationId );
         Log.d("DEBUG_FIREBASE_CALL", "Sending data map: " + new Gson().toJson(data));
         FirebaseFunctions.getInstance("us-central1")
                 .getHttpsCallable("sendNotificationOnReview")
