@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -71,6 +70,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 String uid = currentUser.getUid();
                                 String userEmail = currentUser.getEmail();
                                 String username = String.valueOf(editTextUserName.getText()).trim();
+
                                 DatabaseReference userRef = FirebaseDatabase.getInstance()
                                         .getReference("users").child(uid);
 
