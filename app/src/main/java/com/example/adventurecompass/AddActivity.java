@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
@@ -58,7 +59,8 @@ public class AddActivity extends AppCompatActivity {
             if (selectedImageUri != null) {
                 uploadImageToFirebase();
             } else {
-                Toast.makeText(this, "Моля, изберете снимка", Toast.LENGTH_SHORT).show();
+                insertData(locationId, "");
+                clearAll();
             }
         });
 
@@ -109,10 +111,51 @@ public class AddActivity extends AppCompatActivity {
 
         FirebaseDatabase.getInstance().getReference("reviews").child(locationId).push()
                 .setValue(map)
-                .addOnSuccessListener(unused ->
-                        Toast.makeText(this, "Данните са запазени", Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this,"!"+ userId+"!", Toast.LENGTH_SHORT).show();
+                    FirebaseDatabase.getInstance().getReference("locations").child(locationId).child("name")
+                            .get()
+                            .addOnSuccessListener(snapshot -> {
+                                String locationName = snapshot.getValue(String.class);
+                                if (locationName != null && !locationName.isEmpty()) {
+                                    callSendNotificationFunction(userId, locationName, locationId);
+                                } else {
+                                    callSendNotificationFunction(userId, "Място",locationId);
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                callSendNotificationFunction(userId, "Място",locationId);
+                            });
+                })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Грешка при запис", Toast.LENGTH_SHORT).show());
+    }
+
+    private void callSendNotificationFunction(String userId, String locationName, String locationId) {
+        if (userId == null || locationName == null || locationId == null) {
+            return;
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("userId", userId);
+        data.put("locationName", locationName);
+        data.put("LOCATION_ID", locationId);
+
+        FirebaseFunctions.getInstance("us-central1")
+                .getHttpsCallable("sendNotificationOnReview")
+                .call(data)
+                .addOnSuccessListener(result -> {Object resultData = result.getData();
+
+                    if (resultData instanceof Map) {
+                        Map<?, ?> resultMap = (Map<?, ?>) resultData;
+                        Object success = resultMap.get("success");
+                    }
+
+                    Toast.makeText(this, "Известията са изпратени", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Грешка при изпращането: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 
     private void clearAll() {
