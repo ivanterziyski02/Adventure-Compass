@@ -7,16 +7,12 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
 import java.util.Map;
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
@@ -25,14 +21,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        Log.d("🔥FCM", "Съобщение получено!");
 
         Map<String, String> data= remoteMessage.getData();
-        Log.d("🔥FCM", "DATA: "+data);
         String locationName = data.get("locationName");
         String userName = data.get("userName");
         String locationId = data.get("LOCATION_ID");
-
         String title = "Ново мнение";
         String message = userName + " публикува мнение за " + locationName;
 
@@ -42,8 +35,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private void showNotification(String title, String message, String locationId) {
         String channelId = "default_channel_id";
 
-        // 1. Intent за отваряне на ReviewListActivity (или друга активност)
-        Intent intent = new Intent(this, ReviewActivity.class); // смени с твоя активност
+        Intent intent = new Intent(this, ReviewActivity.class);
         intent.putExtra("LOCATION_ID", locationId);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 

@@ -94,8 +94,6 @@ public class MainActivity extends AppCompatActivity {
                                                     userMap.put("friendRequests", friendRequests);
 
                                                     userRef.setValue(userMap);
-                                                }else {
-                                                    Log.e("FCM_TOKEN", "Неуспешно извличане на токен", task.getException());
                                                 }
                                             });
                                         }
@@ -106,10 +104,7 @@ public class MainActivity extends AppCompatActivity {
                                         Log.e("Firebase", "Database error: " + error.getMessage());
                                     }
                                 });
-
-                                Log.d("MainActivity", "ID of logged user: " + uid);
                             }
-
                             Intent intent = new Intent(MainActivity.this, HomePage.class);
                             startActivity(intent);
                             finish();
@@ -126,9 +121,9 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1001) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d("🔥FCM", "POST_NOTIFICATIONS permission granted!");
+                Log.d("FCM", "POST_NOTIFICATIONS permission granted!");
             } else {
-                Log.w("🔥FCM", "POST_NOTIFICATIONS permission denied.");
+                Log.w("FCM", "POST_NOTIFICATIONS permission denied.");
             }
         }
     }
