@@ -10,11 +10,13 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.database.*;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
@@ -22,19 +24,17 @@ import java.util.Map;
 
 public class AddActivity extends AppCompatActivity {
 
-    private EditText userName, description;
+    private EditText description;
     private ImageView imagePreview;
     private Button btnChooseImage, btnAdd, btnBack;
     private Uri selectedImageUri;
-    private String userId;
-    private String locationId;
+    private String userId, locationId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
 
-        userName = findViewById(R.id.txtName);
         description = findViewById(R.id.txtEmail);
         imagePreview = findViewById(R.id.imagePreview);
         btnChooseImage = findViewById(R.id.btnChooseImage);
@@ -42,8 +42,8 @@ public class AddActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
 
         locationId = getIntent().getStringExtra("LOCATION_ID");
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             userId = currentUser.getUid();
         }
@@ -89,7 +89,6 @@ public class AddActivity extends AppCompatActivity {
                         storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                             String imageUrl = uri.toString();
                             insertData(locationId, imageUrl);
-                            clearAll();
                         })
                 )
                 .addOnFailureListener(e ->
@@ -103,32 +102,51 @@ public class AddActivity extends AppCompatActivity {
             return;
         }
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("userId", userId);
-        map.put("userName", userName.getText().toString());
-        map.put("description", description.getText().toString());
-        map.put("url", imageUrl);
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String name = snapshot.child("name").getValue(String.class);
+                String profileUrl = snapshot.child("profilePictureUrl").getValue(String.class);
+                if (name == null || name.isEmpty()) name = "Anonymous";
 
-        FirebaseDatabase.getInstance().getReference("reviews").child(locationId).push()
-                .setValue(map)
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(this,"!"+ userId+"!", Toast.LENGTH_SHORT).show();
-                    FirebaseDatabase.getInstance().getReference("locations").child(locationId).child("name")
-                            .get()
-                            .addOnSuccessListener(snapshot -> {
-                                String locationName = snapshot.getValue(String.class);
-                                if (locationName != null && !locationName.isEmpty()) {
-                                    callSendNotificationFunction(userId, locationName, locationId);
-                                } else {
-                                    callSendNotificationFunction(userId, "Място",locationId);
-                                }
-                            })
-                            .addOnFailureListener(e -> {
-                                callSendNotificationFunction(userId, "Място",locationId);
-                            });
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Грешка при запис", Toast.LENGTH_SHORT).show());
+                Map<String, Object> map = new HashMap<>();
+                map.put("userId", userId);
+                map.put("userName", name);
+                map.put("description", description.getText().toString());
+                map.put("url", imageUrl);
+                map.put("profilePictureUrl", profileUrl != null ? profileUrl : "");
+
+                FirebaseDatabase.getInstance().getReference("reviews").child(locationId).push()
+                        .setValue(map)
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(AddActivity.this, "Ревюто е записано", Toast.LENGTH_SHORT).show();
+
+                            FirebaseDatabase.getInstance().getReference("locations").child(locationId).child("name")
+                                    .get()
+                                    .addOnSuccessListener(locationSnapshot -> {
+                                        String locationName = locationSnapshot.getValue(String.class);
+                                        if (locationName != null && !locationName.isEmpty()) {
+                                            callSendNotificationFunction(userId, locationName, locationId);
+                                        } else {
+                                            callSendNotificationFunction(userId, "Място", locationId);
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        callSendNotificationFunction(userId, "Място", locationId);
+                                    });
+
+                            clearAll();
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(AddActivity.this, "Грешка при запис", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(AddActivity.this, "Грешка при четене на потребител", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void callSendNotificationFunction(String userId, String locationName, String locationId) {
@@ -159,7 +177,6 @@ public class AddActivity extends AppCompatActivity {
     }
 
     private void clearAll() {
-        userName.setText("");
         description.setText("");
         imagePreview.setImageResource(R.drawable.ic_launcher_background);
         selectedImageUri = null;
