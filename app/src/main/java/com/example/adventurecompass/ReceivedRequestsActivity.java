@@ -44,7 +44,7 @@ public class ReceivedRequestsActivity extends AppCompatActivity {
                                     startActivity(new Intent(ReceivedRequestsActivity.this, MyProfileActivity.class));
                                 } else {
                                     Intent intent = new Intent(ReceivedRequestsActivity.this, UserProfileActivity.class);
-                                    intent.putExtra("userId", selectedUid); // ВАЖНО: правилен ключ
+                                    intent.putExtra("userId", selectedUid);
                                     startActivity(intent);
                                 }
                                 break;

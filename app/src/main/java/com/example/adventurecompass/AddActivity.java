@@ -60,7 +60,6 @@ public class AddActivity extends AppCompatActivity {
                 uploadImageToFirebase();
             } else {
                 insertData(locationId, "");
-                clearAll();
             }
         });
 
@@ -114,7 +113,7 @@ public class AddActivity extends AppCompatActivity {
                 map.put("userId", userId);
                 map.put("userName", name);
                 map.put("description", description.getText().toString());
-                map.put("url", imageUrl);
+                map.put("locationImageUrl", imageUrl);
                 map.put("profilePictureUrl", profileUrl != null ? profileUrl : "");
 
                 FirebaseDatabase.getInstance().getReference("reviews").child(locationId).push()

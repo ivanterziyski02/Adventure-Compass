@@ -65,9 +65,7 @@ public class HomePage extends AppCompatActivity implements LocationAdapter.Selec
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Грешка при зареждане на локации
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
 
         locationAdapter = new LocationAdapter(locationModelList, this);

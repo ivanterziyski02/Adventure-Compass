@@ -73,7 +73,6 @@ public class MyProfileActivity extends AppCompatActivity {
                 }
 
                 if (imageUrl != null && !imageUrl.isEmpty()) {
-                    // Need Picasso or Glide library
                     Picasso.get().load(imageUrl).into(profileImageView);
                 }
             }
@@ -97,7 +96,6 @@ public class MyProfileActivity extends AppCompatActivity {
             startActivityForResult(intent, PICK_IMAGE_REQUEST);
         });
 
-        buttonChats = findViewById(R.id.buttonChats);
         buttonChats.setOnClickListener(v -> {
             Intent intent = new Intent(MyProfileActivity.this, com.example.adventurecompass.chats.ChatListActivity.class);
             startActivity(intent);
@@ -119,9 +117,11 @@ public class MyProfileActivity extends AppCompatActivity {
         });
 
         logOutButton.setOnClickListener(v -> {
-            //TODO
-            //Intent intent = new Intent(HomePage.this, MyProfileActivity.class);
-            //startActivity(intent);
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(MyProfileActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         });
 
 

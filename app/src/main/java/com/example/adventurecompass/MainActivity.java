@@ -2,7 +2,6 @@ package com.example.adventurecompass;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;

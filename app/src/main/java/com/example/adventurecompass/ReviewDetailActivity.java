@@ -10,10 +10,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ReviewDetailActivity extends AppCompatActivity {
-    ImageView locationImage;
-    CircleImageView profileImage;
-    TextView userName, fullDescription;
-    ReviewModel review;
+    private ImageView locationImage;
+    private CircleImageView profileImage;
+    private TextView userName, fullDescription;
+    private ReviewModel review;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
