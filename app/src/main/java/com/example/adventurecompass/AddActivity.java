@@ -85,7 +85,7 @@ public class AddActivity extends AppCompatActivity {
                 .addOnSuccessListener(taskSnapshot ->
                         storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                             String imageUrl = uri.toString();
-                            fetchUserDataAndInsertReview(imageUrl);
+                            insertData(locationId, imageUrl);
                         })
                 )
                 .addOnFailureListener(e ->
@@ -93,7 +93,7 @@ public class AddActivity extends AppCompatActivity {
                 );
     }
 
-    private void fetchUserDataAndInsertReview(String locationImageUrl) {
+    private void insertData(String locationId, String imageUrl) {
         if (userId == null || locationId == null || locationId.isEmpty()) {
             Toast.makeText(this, "Невалиден потребител или място", Toast.LENGTH_SHORT).show();
             return;
@@ -105,20 +105,34 @@ public class AddActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String name = snapshot.child("name").getValue(String.class);
                 String profileUrl = snapshot.child("profilePictureUrl").getValue(String.class);
-
                 if (name == null || name.isEmpty()) name = "Anonymous";
 
                 Map<String, Object> map = new HashMap<>();
                 map.put("userId", userId);
                 map.put("userName", name);
                 map.put("description", description.getText().toString());
-                map.put("locationImageUrl", locationImageUrl);
+                map.put("url", imageUrl);
                 map.put("profilePictureUrl", profileUrl != null ? profileUrl : "");
 
                 FirebaseDatabase.getInstance().getReference("reviews").child(locationId).push()
                         .setValue(map)
                         .addOnSuccessListener(unused -> {
                             Toast.makeText(AddActivity.this, "Ревюто е записано", Toast.LENGTH_SHORT).show();
+
+                            FirebaseDatabase.getInstance().getReference("locations").child(locationId).child("name")
+                                    .get()
+                                    .addOnSuccessListener(locationSnapshot -> {
+                                        String locationName = locationSnapshot.getValue(String.class);
+                                        if (locationName != null && !locationName.isEmpty()) {
+                                            callSendNotificationFunction(userId, locationName, locationId);
+                                        } else {
+                                            callSendNotificationFunction(userId, "Място", locationId);
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        callSendNotificationFunction(userId, "Място", locationId);
+                                    });
+
                             clearAll();
                         })
                         .addOnFailureListener(e ->
@@ -127,9 +141,18 @@ public class AddActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(AddActivity.this, "Грешка при четене на потребител: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddActivity.this, "Грешка при четене на потребител", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void callSendNotificationFunction(String userId, String locationName, String locationId) {
+        DatabaseReference functionsRef = FirebaseDatabase.getInstance().getReference("sendNotification");
+        Map<String, Object> notificationData = new HashMap<>();
+        notificationData.put("userId", userId);
+        notificationData.put("locationName", locationName);
+        notificationData.put("locationId", locationId);
+        functionsRef.push().setValue(notificationData);
     }
 
     private void clearAll() {
