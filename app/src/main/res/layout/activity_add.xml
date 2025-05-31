@@ -48,7 +48,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginBottom="10dp"
         android:scaleType="centerCrop"
-        android:src="#2b5f47" />
+        android:src="#FFFFFF" />
 
     <android.widget.Button
         android:id="@+id/btnChooseImage"
