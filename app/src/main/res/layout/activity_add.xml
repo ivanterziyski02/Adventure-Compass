@@ -10,10 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="Add New Opinion"
-        android:background="#eba448"
+        android:background="#2b5f47"
         android:textSize="25dp"
         android:gravity="center"
-        android:textColor="@color/white"/>
+        android:textColor="@color/black"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
         android:layout_height="35dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:background="#FFFFFF"
+        android:background="#e99d3e"
         android:gravity="center"
         android:id="@+id/txtEmail"/>
 
@@ -48,7 +48,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginBottom="10dp"
         android:scaleType="centerCrop"
-        android:src="#FFFFFF" />
+        android:src="#e99d3e" />
 
     <android.widget.Button
         android:id="@+id/btnChooseImage"

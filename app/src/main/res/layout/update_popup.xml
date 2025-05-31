@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:background="#f7d49d">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,12 +15,11 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:text="Update Review"
-            android:background="@color/black"
+            android:background="#2b5f47"
             android:textSize="25sp"
             android:gravity="center"
             android:textColor="@color/white"/>
 
-        <!-- Name -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,7 +36,6 @@
             android:background="@drawable/rounded"
             android:gravity="center"/>
 
-        <!-- Description -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,7 +52,6 @@
             android:background="@drawable/rounded"
             android:gravity="center"/>
 
-        <!-- Image Preview -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,27 +69,30 @@
             android:background="@drawable/rounded"
             android:contentDescription="Image Preview"/>
 
-        <!-- Choose Image Button -->
-        <Button
+        <android.widget.Button
             android:id="@+id/btnChooseImage"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choose New Image"
-            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:text="Choose Image"
+            android:textSize="21dp"
             android:textAllCaps="false"
-            android:layout_marginHorizontal="25dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/rounded"/>
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:background="@drawable/rounded"
+            android:layout_marginBottom="15dp" />
 
-        <!-- Update Button -->
-        <Button
+        <android.widget.Button
             android:id="@+id/btnUpdate"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="Update"
-            android:textSize="21sp"
+            android:textSize="21dp"
             android:textAllCaps="false"
-            android:layout_margin="25dp"
-            android:background="@drawable/rounded"/>
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:background="@drawable/rounded"
+            android:layout_marginTop="10dp" />
     </LinearLayout>
 </ScrollView>
