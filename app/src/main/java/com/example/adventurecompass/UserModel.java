@@ -3,6 +3,7 @@ package com.example.adventurecompass;
 import java.util.Map;
 
 public class UserModel {
+    private String uid;
     private String name;
     private String email;
     private String bio;
@@ -15,11 +16,12 @@ public class UserModel {
 
     public UserModel() {}
 
-    public UserModel(String name, String email, String bio, String profilePictureUrl) {
+    public UserModel(String name, String email, String bio, String profilePictureUrl, String uid) {
         this.name = name;
         this.email = email;
         this.bio = bio;
         this.profilePictureUrl = profilePictureUrl;
+        this.uid = uid;
     }
 
     public String getName() {
@@ -73,4 +75,12 @@ public class UserModel {
 
     public Map<String, Boolean> getFriends() { return friends; }
     public void setFriends(Map<String, Boolean> friends) { this.friends = friends; }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 }

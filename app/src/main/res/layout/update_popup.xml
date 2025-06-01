@@ -15,9 +15,9 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:text="Update Review"
-            android:background="#2b5f47"
             android:textSize="25sp"
             android:gravity="center"
+            android:background="@drawable/title_background"
             android:textColor="@color/white"/>
 
         <TextView

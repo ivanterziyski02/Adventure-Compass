@@ -2,24 +2,25 @@ package com.example.adventurecompass;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AllUsersActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
+    private EditText searchField;
     private UserAdapter userAdapter;
     private List<UserModel> userList;
+    private List<UserModel> fullUserList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +28,11 @@ public class AllUsersActivity extends AppCompatActivity {
         setContentView(R.layout.activity_all_users);
 
         recyclerView = findViewById(R.id.recyclerUsers);
+        searchField = findViewById(R.id.searchField);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         userList = new ArrayList<>();
+        fullUserList = new ArrayList<>();
         userAdapter = new UserAdapter(this, userList);
         recyclerView.setAdapter(userAdapter);
 
@@ -54,11 +58,23 @@ public class AllUsersActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            // handle error if needed
-                        }
+                        public void onCancelled(@NonNull DatabaseError error) {}
                     });
         });
+
+        searchField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterUsers(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         loadUsers();
     }
 
@@ -74,12 +90,26 @@ public class AllUsersActivity extends AppCompatActivity {
                         tempList.add(user);
                     }
                 }
+                fullUserList.clear();
+                fullUserList.addAll(tempList);
                 userAdapter.updateList(tempList);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
+    }
+
+    private void filterUsers(String query) {
+        List<UserModel> filteredList = new ArrayList<>();
+        for (UserModel user : fullUserList) {
+            String name = user.getName() != null ? user.getName().toLowerCase() : "";
+            String email = user.getEmail() != null ? user.getEmail().toLowerCase() : "";
+
+            if (name.contains(query.toLowerCase()) || email.contains(query.toLowerCase())) {
+                filteredList.add(user);
+            }
+        }
+        userAdapter.updateList(filteredList);
     }
 }

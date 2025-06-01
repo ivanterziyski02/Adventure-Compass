@@ -2,6 +2,7 @@ package com.example.adventurecompass;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -72,8 +73,11 @@ public class ReceivedRequestsActivity extends AppCompatActivity {
                 requestList.clear();
 
                 if (!snapshot.exists()) {
+                    findViewById(R.id.emptyText).setVisibility(View.VISIBLE);
                     userAdapter.notifyDataSetChanged();
                     return;
+                }else {
+                    findViewById(R.id.emptyText).setVisibility(View.GONE);
                 }
 
                 for (DataSnapshot ds : snapshot.getChildren()) {

@@ -10,10 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="Add New Opinion"
-        android:background="#2b5f47"
+        android:background="@drawable/title_background"
         android:textSize="25dp"
         android:gravity="center"
-        android:textColor="@color/black"/>
+        android:textColor="@color/white"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
