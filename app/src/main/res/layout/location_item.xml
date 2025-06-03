@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/locationImage"
             android:layout_marginStart="10dp"
-            android:text="Location name"
+            android:text="Име на туристическия обект"
             android:textColor="#000"
             android:textSize="20sp"
             android:textStyle="bold"/>
@@ -43,7 +43,7 @@
             android:layout_below="@id/namelocation"
             android:layout_marginTop="4dp"
             android:layout_marginStart="10dp"
-            android:text="Location description"
+            android:text="Описание на туристическия обект"
             android:textColor="#000"
             android:textSize="16sp"/>
 

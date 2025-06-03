@@ -3,6 +3,8 @@ package com.example.adventurecompass;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,26 +87,42 @@ public class ReviewAdapter extends FirebaseRecyclerAdapter<ReviewModel, ReviewAd
         // Delete button logic
         holder.btnDelete.setOnClickListener(v -> {
             if (!isAuthor) {
-                Toast.makeText(holder.itemView.getContext(), "You are not the author of this review", Toast.LENGTH_SHORT).show();
+                Toast.makeText(holder.itemView.getContext(), "Не сте автор на това мнение", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
-            builder.setTitle("Are you sure?");
-            builder.setMessage("Deleted data cannot be undone.");
+            builder.setTitle("Сигурни ли сте?");
+            builder.setMessage("Изтритите данни не могат да бъдат възстановени.");
 
-            builder.setPositiveButton("Delete", (dialog, which) -> {
+            builder.setPositiveButton("Изтрий", (dialog, which) -> {
                 FirebaseDatabase.getInstance().getReference("reviews")
                         .child(locationId)
                         .child(Objects.requireNonNull(getRef(position).getKey()))
                         .removeValue();
             });
 
-            builder.setNegativeButton("Cancel", (dialog, which) ->
-                    Toast.makeText(holder.itemView.getContext(), "Cancelled", Toast.LENGTH_SHORT).show());
+            builder.setNegativeButton("Отказ", (dialog, which) ->
+                    Toast.makeText(holder.itemView.getContext(), "Отказано", Toast.LENGTH_SHORT).show());
 
-            builder.show();
+            AlertDialog dialog = builder.create();
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#ffe0b2"))); // светлооранжев фон
+            dialog.show();
+
+            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+            if (positiveButton != null) {
+                positiveButton.setTextColor(Color.WHITE);
+                positiveButton.setBackgroundColor(Color.parseColor("#e53935")); // червен бутон
+            }
+
+            if (negativeButton != null) {
+                negativeButton.setTextColor(Color.WHITE);
+                negativeButton.setBackgroundColor(Color.parseColor("#757575")); // сив бутон
+            }
         });
+
     }
 
     @NonNull

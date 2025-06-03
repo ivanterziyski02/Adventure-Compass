@@ -2,6 +2,8 @@ package com.example.adventurecompass;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.adventurecompass.chats.ChatActivity;
 import com.example.adventurecompass.friendship.FriendshipManager;
@@ -103,7 +106,6 @@ public class UserProfileActivity extends AppCompatActivity {
                     profileImageView.setImageResource(R.drawable.ic_person);
                 }
 
-                // Get state between users
                 friendshipManager.getRelationshipState(currentUserId, userId, state -> {
                     switch (state) {
                         case BLOCKED:
@@ -117,9 +119,39 @@ public class UserProfileActivity extends AppCompatActivity {
                         case FRIENDS:
                             friendActions.setVisibility(View.VISIBLE);
                             buttonBlock.setVisibility(View.VISIBLE);
-                            buttonBlock.setOnClickListener(v ->
-                                    friendshipManager.blockUser(currentUserId, userId, UserProfileActivity.this::finish)
-                            );
+                            buttonBlock.setOnClickListener(v -> {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(UserProfileActivity.this);
+                                builder.setTitle("Сигурни ли сте?");
+                                builder.setMessage("След блокиране няма да можете да виждате или комуникирате с този потребител.");
+
+                                builder.setPositiveButton("Блокирай", (dialog, which) ->
+                                        friendshipManager.blockUser(currentUserId, userId, () -> {
+                                            Toast.makeText(UserProfileActivity.this, "Потребителят беше блокиран", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        })
+                                );
+
+                                builder.setNegativeButton("Отказ", (dialog, which) ->
+                                        Toast.makeText(UserProfileActivity.this, "Отказано", Toast.LENGTH_SHORT).show()
+                                );
+
+                                AlertDialog dialog = builder.create();
+                                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#ffe0b2"))); // мек фон
+                                dialog.show();
+
+                                Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                                Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                                if (positiveButton != null) {
+                                    positiveButton.setTextColor(Color.WHITE);
+                                    positiveButton.setBackgroundColor(Color.parseColor("#e53935")); // червен бутон
+                                }
+
+                                if (negativeButton != null) {
+                                    negativeButton.setTextColor(Color.WHITE);
+                                    negativeButton.setBackgroundColor(Color.parseColor("#757575")); // сив бутон
+                                }
+                            });
                             buttonSendMessage.setOnClickListener(v -> {
                                 Intent intent = new Intent(UserProfileActivity.this, ChatActivity.class);
                                 intent.putExtra("userId", userId);

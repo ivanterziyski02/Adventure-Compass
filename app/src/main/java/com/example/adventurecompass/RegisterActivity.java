@@ -35,7 +35,7 @@ public class RegisterActivity extends AppCompatActivity {
         register = findViewById(R.id.sign_up);
 
         signIn.setOnClickListener(v -> {
-            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         });
@@ -98,7 +98,7 @@ public class RegisterActivity extends AppCompatActivity {
                                                     userRef.setValue(userMap).addOnCompleteListener(writeTask -> {
                                                         if (writeTask.isSuccessful()) {
                                                             Toast.makeText(RegisterActivity.this, "Регистрация успешна", Toast.LENGTH_LONG).show();
-                                                            Intent intent = new Intent(RegisterActivity.this, HomePage.class);
+                                                            Intent intent = new Intent(RegisterActivity.this, HomePageActivity.class);
                                                             startActivity(intent);
                                                             finish();
                                                         } else {
@@ -108,7 +108,7 @@ public class RegisterActivity extends AppCompatActivity {
                                                 }
                                             });
                                         } else {
-                                            Intent intent = new Intent(RegisterActivity.this, HomePage.class);
+                                            Intent intent = new Intent(RegisterActivity.this, HomePageActivity.class);
                                             startActivity(intent);
                                             finish();
                                         }

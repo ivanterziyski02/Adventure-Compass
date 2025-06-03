@@ -9,9 +9,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.*;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
@@ -19,33 +21,31 @@ import java.util.Map;
 
 public class EditActivity extends AppCompatActivity {
 
-    private EditText userNameEditText, descriptionEditText;
+    private EditText descriptionEditText;
     private ImageView imagePreview;
     private Button btnChooseImage, btnUpdate;
-    private String reviewId, locationId, currentImageUrl;
+    private String reviewId, locationId, currentImageUrl, userId;
     private Uri selectedImageUri = null;
     private ActivityResultLauncher<Intent> galleryLauncher;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.update_popup);
 
-        userNameEditText = findViewById(R.id.txtName);
         descriptionEditText = findViewById(R.id.txtDescription);
         imagePreview = findViewById(R.id.imagePreview);
         btnChooseImage = findViewById(R.id.btnChooseImage);
         btnUpdate = findViewById(R.id.btnUpdate);
 
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         Intent intent = getIntent();
         reviewId = intent.getStringExtra("reviewId");
         locationId = intent.getStringExtra("locationId");
-        String userName = intent.getStringExtra("userName");
         String description = intent.getStringExtra("description");
         currentImageUrl = intent.getStringExtra("imageUrl");
 
-        userNameEditText.setText(userName);
         descriptionEditText.setText(description);
         Glide.with(this).load(currentImageUrl).into(imagePreview);
 
@@ -92,19 +92,33 @@ public class EditActivity extends AppCompatActivity {
     }
 
     private void updateReview(String imageUrl) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("userName", userNameEditText.getText().toString().trim());
-        map.put("description", descriptionEditText.getText().toString().trim());
-        map.put("url", imageUrl);
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String name = snapshot.child("name").getValue(String.class);
+                if (name == null || name.isEmpty()) name = "Anonymous";
 
-        FirebaseDatabase.getInstance().getReference("reviews")
-                .child(locationId).child(reviewId).updateChildren(map)
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Ревюто е обновено успешно", Toast.LENGTH_SHORT).show();
-                    new android.os.Handler(android.os.Looper.getMainLooper())
-                            .postDelayed(this::finish, 800);
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Грешка при обновяване", Toast.LENGTH_SHORT).show());
+                Map<String, Object> map = new HashMap<>();
+                map.put("userName", name);
+                map.put("description", descriptionEditText.getText().toString().trim());
+                map.put("url", imageUrl);
+
+                FirebaseDatabase.getInstance().getReference("reviews")
+                        .child(locationId).child(reviewId).updateChildren(map)
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(EditActivity.this, "Ревюто е обновено успешно", Toast.LENGTH_SHORT).show();
+                            new android.os.Handler(android.os.Looper.getMainLooper())
+                                    .postDelayed(EditActivity.this::finish, 800);
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(EditActivity.this, "Грешка при обновяване", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(EditActivity.this, "Грешка при четене на потребител", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

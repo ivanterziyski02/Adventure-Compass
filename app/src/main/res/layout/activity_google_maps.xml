@@ -10,17 +10,17 @@
     tools:context=".GoogleMapsActivity">
     <EditText
         android:id="@+id/source"
-        android:hint="Enter start location"
+        android:hint="Въведете начална дестинация"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <EditText
         android:id="@+id/destination"
-        android:hint="Enter source location"
+        android:hint="Въведете крайна дестинация"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <Button
         android:id="@+id/btnSubmit"
-        android:text="Open Navigation"
+        android:text="Отвори навигация"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

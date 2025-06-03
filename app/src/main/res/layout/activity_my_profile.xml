@@ -48,7 +48,7 @@
                     android:id="@+id/emailText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Email:"
+                    android:text="Имейл:"
                     android:textStyle="bold"
                     android:textAlignment="center" />
 
@@ -56,7 +56,7 @@
                     android:id="@+id/nameText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Name:"
+                    android:text="Потребителско име:"
                     android:textStyle="bold"
                     android:layout_marginTop="8dp"
                     android:textAlignment="center" />
@@ -65,7 +65,7 @@
                     android:id="@+id/bioText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Bio:"
+                    android:text="Биография:"
                     android:textStyle="bold"
                     android:layout_marginTop="8dp"
                     android:textAlignment="center" />
@@ -74,7 +74,7 @@
                     android:id="@+id/registrationDateText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Регистрация:"
+                    android:text="Дата на регистрация:"
                     android:textStyle="bold"
                     android:layout_marginTop="8dp"
                     android:textAlignment="center" />

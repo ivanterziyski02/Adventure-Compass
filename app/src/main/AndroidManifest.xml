@@ -56,7 +56,7 @@
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".HomePage"
+            android:name=".HomePageActivity"
             android:exported="false" />
         <activity
             android:name=".SelectedLocationActivity"
@@ -71,7 +71,7 @@
             android:name=".ReviewActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

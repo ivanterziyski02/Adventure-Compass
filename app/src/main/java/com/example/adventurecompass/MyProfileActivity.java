@@ -2,6 +2,8 @@ package com.example.adventurecompass;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
@@ -118,7 +120,7 @@ public class MyProfileActivity extends AppCompatActivity {
 
         logOutButton.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(MyProfileActivity.this, MainActivity.class);
+            Intent intent = new Intent(MyProfileActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
@@ -202,6 +204,22 @@ public class MyProfileActivity extends AppCompatActivity {
             });
         });
         builder.setNegativeButton("Отказ", (dialog, which) -> dialog.cancel());
-        builder.show();
+
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#f5d29c")));
+        dialog.show();
+
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+        if (positiveButton != null) {
+            positiveButton.setTextColor(Color.WHITE);
+            positiveButton.setBackgroundColor(Color.parseColor("#4CAF50")); // Зелен
+        }
+
+        if (negativeButton != null) {
+            negativeButton.setTextColor(Color.WHITE);
+            negativeButton.setBackgroundColor(Color.parseColor("#F44336")); // Червен
+        }
     }
 }

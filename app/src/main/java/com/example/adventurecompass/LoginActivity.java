@@ -18,7 +18,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     EditText editTextEmail, editTextPassword;
     Button signIn;
     TextView signUp;
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         signUp = findViewById(R.id.sign_up);
 
         signUp.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(intent);
             finish();
         });
@@ -51,18 +51,18 @@ public class MainActivity extends AppCompatActivity {
             String password = String.valueOf(editTextPassword.getText());
 
             if (TextUtils.isEmpty(email)) {
-                Toast.makeText(MainActivity.this, "Enter email", Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, "Enter email", Toast.LENGTH_LONG).show();
                 return;
             }
             if (TextUtils.isEmpty(password)) {
-                Toast.makeText(MainActivity.this, "Enter password", Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, "Enter password", Toast.LENGTH_LONG).show();
                 return;
             }
 
             firebaseAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
+                            Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_LONG).show();
                             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
                             if (currentUser != null) {
                                 String uid = currentUser.getUid();
@@ -104,11 +104,11 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 });
                             }
-                            Intent intent = new Intent(MainActivity.this, HomePage.class);
+                            Intent intent = new Intent(LoginActivity.this, HomePageActivity.class);
                             startActivity(intent);
                             finish();
                         } else {
-                            Toast.makeText(MainActivity.this, "Invalid email or password", Toast.LENGTH_LONG).show();
+                            Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_LONG).show();
                             clearAll();
                         }
                     });

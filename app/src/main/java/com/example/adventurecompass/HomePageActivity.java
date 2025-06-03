@@ -23,7 +23,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomePage extends AppCompatActivity implements LocationAdapter.SelectedLocation {
+public class HomePageActivity extends AppCompatActivity implements LocationAdapter.SelectedLocation {
 
     Toolbar toolbar;
     RecyclerView recyclerView;
@@ -97,14 +97,14 @@ public class HomePage extends AppCompatActivity implements LocationAdapter.Selec
         });
 
         profileImageMini.setOnClickListener(v -> {
-            startActivity(new Intent(HomePage.this, MyProfileActivity.class));
+            startActivity(new Intent(HomePageActivity.this, MyProfileActivity.class));
         });
 
     }
 
     @Override
     public void selectedLocation(LocationModel locationModel) {
-        startActivity(new Intent(HomePage.this, SelectedLocationActivity.class).putExtra("data", locationModel));
+        startActivity(new Intent(HomePageActivity.this, SelectedLocationActivity.class).putExtra("data", locationModel));
     }
 
     @Override

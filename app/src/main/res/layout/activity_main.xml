@@ -7,12 +7,12 @@
     android:padding="32dp"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context=".MainActivity">
+    tools:context=".LoginActivity">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="35dp"
         android:text="ADVENTURE COMPASS"
         android:fontFamily="@font/lora"
         android:textAlignment="center"
@@ -25,7 +25,7 @@
         android:id="@+id/editText_register_email"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:hint="Enter your email"
+        android:hint="Въведете имейл"
         android:background="@drawable/rounded_input"
         android:inputType="textEmailAddress"
         android:padding="12dp"
@@ -39,7 +39,7 @@
         android:id="@+id/editText_register_password"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:hint="Enter your password"
+        android:hint="Въведете парола"
         android:background="@drawable/rounded_input"
         android:inputType="textPassword"
         android:padding="12dp"
@@ -54,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
-        android:text="LOG IN"
+        android:text="ВХОД"
         android:textAllCaps="true"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
@@ -72,14 +72,14 @@
             android:id="@+id/sign_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don’t have an account?"
+            android:text="Нямате акаунт?"
             android:textColor="#FFFFFF"
             android:textSize="14sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" SIGN UP"
+            android:text=" РЕГИСТРАЦИЯ"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
             android:textSize="14sp" />
