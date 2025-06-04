@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:gravity="center"
     android:padding="20dp"
-    tools:context=".GoogleMapsActivity">
+    tools:context=".activities.GoogleMapsActivity">
     <EditText
         android:id="@+id/source"
         android:hint="Въведете начална дестинация"

@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:padding="18dp"
     android:background="@drawable/background_image"
-    tools:context=".ReceivedRequestsActivity">
+    tools:context=".activities.ReceivedRequestsActivity">
 
     <!-- Заглавие със същия стил като „Приятели“ -->
     <TextView

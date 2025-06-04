@@ -6,7 +6,7 @@
     android:background="@drawable/background_image"
     android:padding="40dp"
     android:orientation="vertical"
-    tools:context=".RegisterActivity">
+    tools:context=".activities.RegisterActivity">
 
 
     <TextView

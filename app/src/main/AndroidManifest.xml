@@ -26,52 +26,52 @@
         android:theme="@style/Theme.AdventureCompass"
         tools:targetApi="31">
         <activity
-            android:name=".ReviewDetailActivity"
+            android:name=".activities.ReviewDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".chats.ChatListActivity"
+            android:name=".activities.ChatListActivity"
             android:exported="false" />
         <activity
-            android:name=".chats.ChatActivity"
+            android:name=".activities.ChatActivity"
             android:exported="false" />
         <activity
-            android:name=".ReceivedRequestsActivity"
+            android:name=".activities.ReceivedRequestsActivity"
             android:exported="false" />
         <activity
-            android:name=".FriendsListActivity"
+            android:name=".activities.FriendsListActivity"
             android:exported="false" />
         <activity
-            android:name=".UserProfileActivity"
+            android:name=".activities.UserProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".AllUsersActivity"
+            android:name=".activities.AllUsersActivity"
             android:exported="false" />
         <activity
-            android:name=".MyProfileActivity"
+            android:name=".activities.MyProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".EditActivity"
+            android:name=".activities.EditActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".activities.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".HomePageActivity"
+            android:name=".activities.HomePageActivity"
             android:exported="false" />
         <activity
-            android:name=".SelectedLocationActivity"
+            android:name=".activities.SelectedLocationActivity"
             android:exported="false" />
         <activity
-            android:name=".GoogleMapsActivity"
+            android:name=".activities.GoogleMapsActivity"
             android:exported="false" />
         <activity
-            android:name=".AddActivity"
+            android:name=".activities.AddReviewActivity"
             android:exported="false" />
         <activity
-            android:name=".ReviewActivity"
+            android:name=".activities.ReviewActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -80,7 +80,7 @@
         </activity>
 
         <service
-            android:name=".MyFirebaseMessagingService"
+            android:name=".utils.MyFirebaseMessagingService"
             android:exported="false"
             tools:ignore="WrongManifestParent">
             <intent-filter>
