@@ -15,7 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.adventurecompass.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -66,9 +65,9 @@ public class MyProfileActivity extends AppCompatActivity {
                 String imageUrl = snapshot.child("profilePictureUrl").getValue(String.class);
                 Long timestamp = snapshot.child("registrationDate").getValue(Long.class);
 
-                emailText.setText("Email: " + (email != null ? email : ""));
-                nameText.setText("Name: " + (name != null ? name : ""));
-                bioText.setText("Bio: " + (bio != null ? bio : ""));
+                emailText.setText("Имейл: " + (email != null ? email : ""));
+                nameText.setText("Име: " + (name != null ? name : ""));
+                bioText.setText("Био: " + (bio != null ? bio : ""));
 
                 if (timestamp != null) {
                     String date = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
@@ -106,7 +105,7 @@ public class MyProfileActivity extends AppCompatActivity {
         });
 
         allUsersButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MyProfileActivity.this, AllUsersActivity.class); // Ще създадем това Activity
+            Intent intent = new Intent(MyProfileActivity.this, AllUsersActivity.class);
             startActivity(intent);
         });
 

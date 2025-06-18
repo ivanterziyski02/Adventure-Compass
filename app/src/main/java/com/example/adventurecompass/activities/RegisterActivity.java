@@ -51,8 +51,16 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(RegisterActivity.this, "Въведи имейл.", Toast.LENGTH_LONG).show();
                 return;
             }
+            if (!email.contains("@")) {
+                Toast.makeText(RegisterActivity.this, "Имейлът трябва да съдържа '@'.", Toast.LENGTH_LONG).show();
+                return;
+            }
             if (TextUtils.isEmpty(password)) {
-                Toast.makeText(RegisterActivity.this, "Въведи имейл.", Toast.LENGTH_LONG).show();
+                Toast.makeText(RegisterActivity.this, "Въведи парола.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (password.length() < 8) {
+                Toast.makeText(RegisterActivity.this, "Паролата трябва да е поне 8 символа.", Toast.LENGTH_LONG).show();
                 return;
             }
             if (TextUtils.isEmpty(confirmPassword)) {

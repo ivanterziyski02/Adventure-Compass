@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.adventurecompass.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,10 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
-    EditText editTextEmail, editTextPassword;
-    Button signIn;
-    TextView signUp;
-    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    private EditText editTextEmail, editTextPassword;
+    private Button signIn;
+    private TextView signUp;
+    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,9 +121,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1001) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d("FCM", "POST_NOTIFICATIONS permission granted!");
+                Log.d("FCM", "POST_NOTIFICATIONS разрешенията са дадени");
             } else {
-                Log.w("FCM", "POST_NOTIFICATIONS permission denied.");
+                Log.w("FCM", "POST_NOTIFICATIONS разрешенията са отказани.");
             }
         }
     }

@@ -29,11 +29,11 @@ import java.util.List;
 
 public class HomePageActivity extends AppCompatActivity implements LocationAdapter.SelectedLocation {
 
-    Toolbar toolbar;
-    RecyclerView recyclerView;
-    List<LocationModel> locationModelList = new ArrayList<>();
-    DatabaseReference databaseReference;
-    LocationAdapter locationAdapter;
+    private Toolbar toolbar;
+    private RecyclerView recyclerView;
+    private List<LocationModel> locationModelList = new ArrayList<>();
+    private DatabaseReference databaseReference;
+    private LocationAdapter locationAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.adventurecompass.R;
 import com.example.adventurecompass.utils.FriendshipManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -70,6 +69,7 @@ public class UserProfileActivity extends AppCompatActivity {
             finish();
             return;
         }
+
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         if (userId.equals(currentUserId)) {
             startActivity(new Intent(this, MyProfileActivity.class));
@@ -77,7 +77,6 @@ public class UserProfileActivity extends AppCompatActivity {
             return;
         }
 
-        // Get user info
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @SuppressLint("SetTextI18n")
@@ -89,14 +88,14 @@ public class UserProfileActivity extends AppCompatActivity {
                 String imageUrl = snapshot.child("profilePictureUrl").getValue(String.class);
                 Long timestamp = snapshot.child("registrationDate").getValue(Long.class);
 
-                emailText.setText("Email: " + (email != null ? email : ""));
-                nameText.setText("Name: " + (name != null ? name : ""));
-                bioText.setText("Bio: " + (bio != null ? bio : ""));
+                emailText.setText("Имейл: " + (email != null ? email : ""));
+                nameText.setText("Име: " + (name != null ? name : ""));
+                bioText.setText("Био: " + (bio != null ? bio : ""));
 
                 if (timestamp != null) {
                     String date = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
                             .format(new Date(timestamp));
-                    registrationDateText.setText("Регистрация: " + date);
+                    registrationDateText.setText("Дата на регистрация: " + date);
                 }
 
                 if (imageUrl != null && !imageUrl.isEmpty()) {

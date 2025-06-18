@@ -140,7 +140,7 @@ public class FriendshipManager {
     public void unblockUser(String blockerUid, String blockedUid, Runnable onSuccess) {
         usersRef.child(blockerUid).child("blocked").child(blockedUid).removeValue()
                 .addOnSuccessListener(aVoid -> {
-                    showToast("Потребителят е разблокиран");
+                    showToast("Потребителят е отблокиран");
                     if (onSuccess != null) onSuccess.run();
                 })
                 .addOnFailureListener(e -> showToast("Грешка при разблокиране"));

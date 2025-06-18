@@ -1,5 +1,6 @@
 package com.example.adventurecompass.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -36,10 +37,8 @@ public class FriendsListActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.requestsRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         searchField = findViewById(R.id.searchField);
-
         adapter = new UserAdapter(this, friendList);
         recyclerView.setAdapter(adapter);
-
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         adapter.setOnUserClickListener(user -> {
@@ -80,6 +79,7 @@ public class FriendsListActivity extends AppCompatActivity {
                 .getReference("users").child(currentUserId).child("friends");
 
         friendsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 friendList.clear();
@@ -103,13 +103,13 @@ public class FriendsListActivity extends AppCompatActivity {
                     FirebaseDatabase.getInstance().getReference("users")
                             .child(uid)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @SuppressLint("NotifyDataSetChanged")
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot userSnap) {
                                     if (userSnap.exists()) {
                                         UserModel user = userSnap.getValue(UserModel.class);
                                         if (user != null) {
                                             user.setUid(userSnap.getKey());
-
                                             friendList.add(user);
                                             fullFriendList.add(user);
                                         }

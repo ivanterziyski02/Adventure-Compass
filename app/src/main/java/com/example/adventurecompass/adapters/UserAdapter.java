@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.adventurecompass.R;
 import com.example.adventurecompass.models.UserModel;
-
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
@@ -88,8 +87,4 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         notifyDataSetChanged();
     }
 
-    public void removeItem(int position) {
-        userList.remove(position);
-        notifyItemRemoved(position);
-    }
 }

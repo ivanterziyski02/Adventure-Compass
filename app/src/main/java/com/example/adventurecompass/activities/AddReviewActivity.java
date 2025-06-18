@@ -58,6 +58,13 @@ public class AddReviewActivity extends AppCompatActivity {
         });
 
         btnAdd.setOnClickListener(v -> {
+            String desc = description.getText().toString().trim();
+
+            if (desc.isEmpty()) {
+                Toast.makeText(this, "Моля, въведете описание", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             if (selectedImageUri != null) {
                 uploadImageToFirebase();
             } else {
@@ -167,7 +174,6 @@ public class AddReviewActivity extends AppCompatActivity {
 
                     if (resultData instanceof Map) {
                         Map<?, ?> resultMap = (Map<?, ?>) resultData;
-                        Object success = resultMap.get("success");
                     }
 
                     Toast.makeText(this, "Известията са изпратени", Toast.LENGTH_SHORT).show();
