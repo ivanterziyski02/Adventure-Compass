@@ -40,7 +40,6 @@ public class ReviewActivity extends AppCompatActivity {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Retrieve the context from the view
                 Context context = v.getContext();
                 Intent intent = new Intent(context, AddActivity.class);
                 intent.putExtra("LOCATION_ID", locationId); //locationId -> AddActivity

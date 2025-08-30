@@ -1,7 +1,6 @@
 package com.example.adventurecompass;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,15 +13,11 @@ import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import android.location.Geocoder;
 import android.location.Address;
 import java.util.List;
 import java.util.Locale;
-
-
-
 
 public class GoogleMapsActivity extends AppCompatActivity {
 
@@ -92,40 +87,18 @@ public class GoogleMapsActivity extends AppCompatActivity {
                     List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
                     if (addresses != null && !addresses.isEmpty()) {
                         Address address = addresses.get(0);
-                        String addressLine = address.getAddressLine(0); // пълният адрес
+                        String addressLine = address.getAddressLine(0);
                         editTextSource.post(() -> editTextSource.setText(addressLine));
                     } else {
-                        editTextSource.setText(latitude + "," + longitude); // fallback
+                        editTextSource.setText(latitude + "," + longitude);
                     }
                 } catch (Exception e) {
-                    editTextSource.setText(latitude + "," + longitude); // fallback при грешка
+                    editTextSource.setText(latitude + "," + longitude);
                     e.printStackTrace();
                 }
             } else {
                 Toast.makeText(this, "Локацията е недостъпна", Toast.LENGTH_SHORT).show();
             }
         });
-        /*
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, location -> {
-                    if (location != null) {
-                        double latitude = location.getLatitude();
-                        double longitude = location.getLongitude();
-                        editTextSource.setText(latitude + "," + longitude);
-                    }
-                });
-
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, location -> {
-                    if (location != null) {
-                        double latitude = location.getLatitude();
-                        double longitude = location.getLongitude();
-                        editTextSource.setText(latitude + "," + longitude);
-                    } else {
-                        Toast.makeText(this, "Локацията е null (не е налична)", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-         */
     }
 }

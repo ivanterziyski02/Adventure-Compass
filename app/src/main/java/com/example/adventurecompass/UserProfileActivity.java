@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.adventurecompass.chats.ChatActivity;
 import com.example.adventurecompass.friendship.FriendshipManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -31,7 +32,7 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_profile);
+        setContentView(R.layout.activity_user_profile);
 
         friendshipManager = new FriendshipManager(this);
         emailText = findViewById(R.id.emailText);
@@ -49,6 +50,8 @@ public class UserProfileActivity extends AppCompatActivity {
         Button buttonDecline = findViewById(R.id.buttonDecline);
         Button buttonBlock = findViewById(R.id.buttonBlock);
         Button buttonUnblock = findViewById(R.id.buttonUnblock);
+        Button buttonSendMessage = findViewById(R.id.buttonMessage);
+
 
         buttonSendRequest.setVisibility(View.GONE);
         buttonRequestSent.setVisibility(View.GONE);
@@ -56,7 +59,6 @@ public class UserProfileActivity extends AppCompatActivity {
         friendActions.setVisibility(View.GONE);
         blockActionsLayout.setVisibility(View.GONE);
         buttonBlock.setVisibility(View.GONE);
-        findViewById(R.id.editProfileButton).setVisibility(View.GONE);
 
         String userId = getIntent().getStringExtra("userId");
         if (userId == null) {
@@ -118,6 +120,11 @@ public class UserProfileActivity extends AppCompatActivity {
                             buttonBlock.setOnClickListener(v ->
                                     friendshipManager.blockUser(currentUserId, userId, UserProfileActivity.this::finish)
                             );
+                            buttonSendMessage.setOnClickListener(v -> {
+                                Intent intent = new Intent(UserProfileActivity.this, ChatActivity.class);
+                                intent.putExtra("userId", userId);
+                                startActivity(intent);
+                            });
                             break;
 
                         case REQUEST_SENT:
@@ -131,6 +138,16 @@ public class UserProfileActivity extends AppCompatActivity {
                                         buttonRequestActions.setVisibility(View.GONE);
                                         friendActions.setVisibility(View.VISIBLE);
                                         buttonBlock.setVisibility(View.VISIBLE);
+
+                                        buttonSendMessage.setOnClickListener(view-> {
+                                            Intent intent = new Intent(UserProfileActivity.this, ChatActivity.class);
+                                            intent.putExtra("userId", userId);
+                                            startActivity(intent);
+                                        });
+
+                                        buttonBlock.setOnClickListener(view -> {
+                                            friendshipManager.blockUser(currentUserId, userId, UserProfileActivity.this::finish);
+                                        });
                                     })
                             );
                             buttonDecline.setOnClickListener(v ->
@@ -152,7 +169,7 @@ public class UserProfileActivity extends AppCompatActivity {
                             break;
                         case BLOCKED_BY_OTHER:
                             Toast.makeText(UserProfileActivity.this, "Този потребител не може да бъде достъпен", Toast.LENGTH_SHORT).show();
-                            friendActions.setVisibility(View.GONE); // layout с бутони "изпрати съобщение" и "блокирай"
+                            friendActions.setVisibility(View.GONE);
                             buttonSendRequest.setVisibility(View.GONE);
                             buttonRequestSent.setVisibility(View.GONE);
                             buttonRequestActions.setVisibility(View.GONE);

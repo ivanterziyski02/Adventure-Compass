@@ -44,6 +44,11 @@ public class MyProfileActivity extends AppCompatActivity {
         TextView registrationDateText = findViewById(R.id.registrationDateText);
         profileImageView = findViewById(R.id.profileImageView);
         Button editProfileButton = findViewById(R.id.editProfileButton);
+        Button friendsButton = findViewById(R.id.buttonFriends);
+        Button logOutButton = findViewById(R.id.buttonLogout);
+        Button allUsersButton = findViewById(R.id.buttonAllUsers);
+        Button receivedRequestsButton = findViewById(R.id.buttonFriendRequests);
+        Button buttonChats = findViewById(R.id.buttonChats);
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
@@ -68,7 +73,6 @@ public class MyProfileActivity extends AppCompatActivity {
                 }
 
                 if (imageUrl != null && !imageUrl.isEmpty()) {
-                    // Need Picasso or Glide library
                     Picasso.get().load(imageUrl).into(profileImageView);
                 }
             }
@@ -91,6 +95,36 @@ public class MyProfileActivity extends AppCompatActivity {
             intent.setType("image/*");
             startActivityForResult(intent, PICK_IMAGE_REQUEST);
         });
+
+        buttonChats.setOnClickListener(v -> {
+            Intent intent = new Intent(MyProfileActivity.this, com.example.adventurecompass.chats.ChatListActivity.class);
+            startActivity(intent);
+        });
+
+        allUsersButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyProfileActivity.this, AllUsersActivity.class); // Ще създадем това Activity
+            startActivity(intent);
+        });
+
+        friendsButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MyProfileActivity.this, FriendsListActivity.class);
+            startActivity(intent);
+        });
+
+        receivedRequestsButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MyProfileActivity.this, ReceivedRequestsActivity.class);
+            startActivity(intent);
+        });
+
+        logOutButton.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(MyProfileActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        });
+
+
     }
 
     @Override

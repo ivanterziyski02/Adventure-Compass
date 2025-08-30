@@ -2,8 +2,8 @@ package com.example.adventurecompass;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,6 +28,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1001);
+            }
+        }
 
         editTextEmail = findViewById(R.id.editText_register_email);
         editTextPassword = findViewById(R.id.editText_register_password);
@@ -97,10 +103,7 @@ public class MainActivity extends AppCompatActivity {
                                         Log.e("Firebase", "Database error: " + error.getMessage());
                                     }
                                 });
-
-                                Log.d("MainActivity", "ID of logged user: " + uid);
                             }
-
                             Intent intent = new Intent(MainActivity.this, HomePage.class);
                             startActivity(intent);
                             finish();
@@ -110,6 +113,18 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
         });
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1001) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("FCM", "POST_NOTIFICATIONS permission granted!");
+            } else {
+                Log.w("FCM", "POST_NOTIFICATIONS permission denied.");
+            }
+        }
     }
 
     private void clearAll() {
